@@ -6,6 +6,8 @@ This is a minimal Flutter MVP scaffold:
 - Bottom navigation: Home / Lab / Results
 - Splash screen + logo branding
 - Scenario lab with repeatable sensor playback
+- Live accelerometer capture from Android device sensors
+- Saved trace replay with automatic PASS/CHECK evaluation
 - Batch scenario runner for quick evaluation
 - Adjustable detection thresholds
 - Persistent event log with JSON export

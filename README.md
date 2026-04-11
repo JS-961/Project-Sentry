@@ -28,6 +28,9 @@ The goal is a reliable, demo-ready MVP within a short timeline.
 - docs/Architecture.md
 - docs/Testing-Evaluation.md
 - docs/Differentiators.md
+- docs/Validation-Research-Plan.md
+- docs/Validation-Workflow.md
+- docs/Survey-Market-Research.md
 
 ## Timeline (Target: under 4 weeks)
 - Week 1: scope, UX flow, architecture, app skeleton
