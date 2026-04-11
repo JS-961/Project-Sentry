@@ -128,7 +128,8 @@ class _AlertScreenState extends State<AlertScreen> {
       severity: widget.severity,
     );
 
-    await widget.eventLog.add(event);
+    // Persist in the background; don't block the UI from closing.
+    unawaited(widget.eventLog.add(event));
     if (!mounted) return;
     Navigator.of(context).pop(event);
   }
