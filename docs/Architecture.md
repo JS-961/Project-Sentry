@@ -1,54 +1,91 @@
-# Architecture (MVP)
+# Project Sentry Architecture
 
-Sentry is a Flutter-based crash detection prototype that uses phone sensors and
-a rule-based detector to identify high-impact events. It provides a confirmation
-UI, logs outcomes locally, and packages results into a report ZIP for evaluation.
+Project Sentry is intentionally split into two app layers that serve different
+capstone goals while sharing the same repository, documentation, and future ML
+workspace.
 
-## High-Level Flow
-1. Sensor samples stream from the device (or simulation) into the app.
-2. The Trip Controller forwards samples to the Detection Engine.
-3. The Detection Engine applies thresholds and speed gating.
-4. A suspected crash triggers the Alert UI with a countdown.
-5. User response (or timeout) is recorded in the Event Log.
-6. Reports and exports are generated from the Event Log.
-7. A ZIP report pack is built with a manifest for documentation.
+## Design Principle
 
-## Core Modules
-- **UI Layer**: Splash, Home, Scenario Lab, Results, Settings, Presentation Mode, Alert.
-- **Trip Controller**: Coordinates sensor streaming and detection lifecycle.
-- **Sensor Sources**: SimulatedSensorService for live demos, ScenarioSensorService for tests.
-- **Detection Engine**: Rule-based thresholds on acceleration magnitude and jerk.
-- **Event Log**: Persists scenario results and alert outcomes locally.
-- **Config Store**: Saves detection thresholds and cooldown values.
-- **Report Generator**: Produces Markdown and HTML summaries for reporting.
-- **File Exporter**: Writes CSV/JSON/HTML/MD and ZIP report packs.
-- **Asset Loader**: Loads report templates and diagrams used in the pack.
+Do not force one stack to do everything.
 
-## Data & Storage
-All data is stored locally on-device for the MVP. Events are saved as a list of
-`CrashEvent` objects and exported as JSON/CSV. Configuration is stored separately
-as `DetectionConfig`. No remote servers are required for the prototype.
+- `flutter-app/` owns polished demo, simulation, validation replay, results,
+  and presentation flows.
+- `android-native/` owns real Android runtime behavior, foreground monitoring,
+  permissions, persistence, and crash escalation.
 
-## Evaluation & Scenario Lab
-Scenario Lab plays deterministic sensor traces so results are reproducible.
-Each scenario logs PASS/CHECK based on expected vs. observed detection. A batch
-runner executes all scenarios to generate a full evaluation log quickly.
+This keeps the repository honest:
 
-## Reporting & Evidence
-The Results screen generates:
-- Markdown and HTML reports with a scenario outcome table.
-- Chart captures for visualization.
-- A ZIP report pack containing logs, templates, diagrams, and a manifest.
+- the Flutter app is strong for demos and evidence packaging
+- the native app is strong for realistic device behavior
 
-See `docs/Requirements.md` for the full requirements traceability matrix
-linking features to evidence and tests.
+## Repository Responsibilities
 
-## Security & Privacy (MVP)
-User data remains local to the device. The alert flow does not transmit messages
-in the prototype. Location and contact integration are planned extensions.
+| Area | Primary Responsibility | Source of Truth |
+| --- | --- | --- |
+| `flutter-app/` | Scenario lab, live validation capture, replay, results dashboard, report exports, presentation mode | original Project-Sentry |
+| `android-native/` | Foreground service, permissions, sensors, location, Room, countdown, SMS/call/TTS crash flow | original SafeDrive-project |
+| `docs/` | Unified capstone architecture, evaluation, ethics, references, and repository guidance | merged |
+| `demo/` | Demo script and class/demo support material | merged |
+| `ml/` | Training and export scaffold for future model work | original SafeDrive-project scaffold plus shared future work |
 
-## Limitations & Next Steps
-- Real-world validation is not completed (simulated data only).
-- Background detection and SMS integration are not enabled in the MVP.
-- Accuracy depends on phone placement and sensor variability.
-- Next steps include real-device testing and emergency contact integration.
+## Flutter App Boundary
+
+The Flutter app is not just a mock UI. It now supports:
+
+- deterministic scenario playback
+- live accelerometer capture from a real Android device
+- optional GPS speed for trace recording
+- saved trace replay and PASS/CHECK evaluation
+- results visualization and report-pack generation
+
+However, Flutter is still not the primary runtime for:
+
+- long-running background monitoring
+- Android foreground service reliability
+- native SMS/call/TTS crash escalation
+
+## Native Android Boundary
+
+The native Android app is the real MVP runtime and owns:
+
+- `DrivingModeService` foreground operation
+- runtime permission flow
+- accelerometer, gyroscope, and fused location collection
+- risk scoring and crash-like event gating
+- Room persistence for trips, events, and crash alerts
+- countdown UI and escalation actions
+
+It is the best place to continue technical development for a realistic mobile
+prototype.
+
+## Shared Artifacts
+
+The two apps are currently connected at the repository level rather than through
+an in-process bridge.
+
+Shared capstone artifacts include:
+
+- evaluation methodology
+- demo script
+- design and ethics documentation
+- future ML workspace
+- export and reporting conventions
+
+## Why There Is No Heavy Bridge Yet
+
+No full Flutter-native bridge was added during this merge because it would be
+high-risk and would blur responsibilities before the repository structure is
+stable.
+
+Low-risk coordination paths for later:
+
+- shared CSV or JSON trace formats
+- shared report inputs and outputs
+- launching native demos separately during capstone presentation
+- gradual extraction of common evaluation logic
+
+High-risk paths deliberately deferred:
+
+- rewriting the Android service into Flutter
+- large MethodChannel integrations without a stable contract
+- collapsing both apps into one runtime prematurely

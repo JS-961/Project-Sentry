@@ -1,0 +1,4 @@
+# Flutter creates local.properties automatically on many setups.
+# If Gradle cannot find the Flutter SDK or Android SDK, add matching local values.
+flutter.sdk=C:/src/flutter
+sdk.dir=C:/Users/YourUser/AppData/Local/Android/Sdk

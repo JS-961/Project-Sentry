@@ -1,0 +1,3 @@
+# Optional when ANDROID_HOME is already configured.
+# Use forward slashes on Windows.
+sdk.dir=C:/Users/YourUser/AppData/Local/Android/Sdk

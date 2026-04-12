@@ -22,23 +22,24 @@
 - Background and motivation: Smartphone sensors enable low-cost safety monitoring without vehicle hardware.
 - Problem statement: Existing solutions are opaque, expensive, or inaccessible for everyday drivers.
 - Research/practical gap: Need a transparent, privacy-first crash detection workflow with exportable evidence.
-- Objectives: See **docs/MVP.md** and **docs/Feature-Priorities.md**.
+- Objectives: See **docs/repository-guide.md** and
+  **docs/requirements-traceability.md**.
 - Significance and impact: Enables reproducible evaluation and educational demonstration.
 
 ## 2. Related Work
 - Academic references summary: **[Fill with citations]**
 - Industry references summary: **[Fill with citations]**
-- Identified gaps: See **docs/Differentiators.md**.
+- Identified gaps: See **docs/architecture.md** and **docs/references.md**.
 
 ## 3. Requirements
-- Functional requirements: See **docs/Requirements.md**.
+- Functional requirements: See **docs/requirements-traceability.md**.
 - Non-functional requirements: Privacy-first, reproducibility, local-only storage.
 - Constraints: Short timeline, simulated data, limited hardware access.
 
 ## 4. System Design
-- Architecture overview: See **docs/Architecture.md**.
+- Architecture overview: See **docs/architecture.md**.
 - Key components: Trip Controller, Detection Engine, Scenario Lab, Event Log.
-- Data flow and algorithm logic: See **docs/Diagrams.md**.
+- Data flow and algorithm logic: See **docs/diagrams.md**.
 
 ## 5. Implementation
 - Tech stack: Flutter/Dart, sensors_plus, shared_preferences, geolocator, permission_handler, archive.
@@ -75,11 +76,13 @@
 ## 7. Results & Discussion
 - Outcomes vs objectives: **[Update after final batch run]**
 - Strengths: Transparent thresholds, reproducible scenarios, exportable evidence.
-- Limitations: Simulated data only, no background service, no real SMS integration.
+- Limitations: Flutter remains demo and validation focused, native Android owns
+  the real foreground-service and escalation path, and ML is still scaffold
+  only.
 
 ## 8. Project Management
-- Timeline / milestones: See **docs/Timeline.md**.
-- Risks and mitigation: See **docs/Risks-Ethics.md**.
+- Evaluation plan: See **docs/evaluation-testing-plan.md**.
+- Risks and mitigation: See **docs/ethics-and-limitations.md**.
 - Team roles: **[Fill]**
 
 ## 9. Conclusion & Future Work

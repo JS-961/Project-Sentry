@@ -1,0 +1,33 @@
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Flutter
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub/
+**/build/
+flutter-app/android/local.properties
+
+# Android and Gradle
+**/.gradle/
+**/captures/
+**/*.iml
+**/local.properties
+
+# Python and notebooks
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+ml/.venv/
+ml/venv/
+ml/env/
+
+# Generated reports and local data
+reports/
+sensor_traces/

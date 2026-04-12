@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">SafeDrive AI</string>
+    <string name="driving_notification_title">SafeDrive AI Driving Mode</string>
+    <string name="driving_notification_text">Monitoring risk and crash events</string>
+    <string name="stop_driving">Stop Driving Mode</string>
+</resources>
