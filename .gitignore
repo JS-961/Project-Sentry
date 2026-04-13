@@ -13,6 +13,7 @@ Thumbs.db
 flutter-app/android/local.properties
 
 # Android and Gradle
+**/.idea/
 **/.gradle/
 **/captures/
 **/*.iml
