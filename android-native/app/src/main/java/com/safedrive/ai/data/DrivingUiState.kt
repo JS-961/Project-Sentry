@@ -17,4 +17,8 @@ data class DrivingUiState(
     val latestEventLabel: String = "No events yet",
     val counters: RiskCounters = RiskCounters(),
     val crashCountdownActive: Boolean = false,
+    val sessionStartedAtEpochMs: Long? = null,
+    val lastLocationEpochMs: Long? = null,
+    val lastSensorEpochMs: Long? = null,
+    val lastAlertOutcome: String? = null,
 )

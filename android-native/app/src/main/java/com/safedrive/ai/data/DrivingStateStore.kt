@@ -12,9 +12,16 @@ object DrivingStateStore {
     fun setDrivingActive(active: Boolean) {
         _state.update { current ->
             if (active) {
-                current.copy(isDriving = true)
+                current.copy(
+                    isDriving = true,
+                    sessionStartedAtEpochMs = current.sessionStartedAtEpochMs
+                        ?: System.currentTimeMillis(),
+                )
             } else {
-                DrivingUiState(isDriving = false)
+                DrivingUiState(
+                    isDriving = false,
+                    lastAlertOutcome = current.lastAlertOutcome,
+                )
             }
         }
     }
@@ -24,7 +31,12 @@ object DrivingStateStore {
     }
 
     fun setSpeedKmh(speedKmh: Float) {
-        _state.update { it.copy(latestSpeedKmh = speedKmh) }
+        _state.update {
+            it.copy(
+                latestSpeedKmh = speedKmh,
+                lastLocationEpochMs = System.currentTimeMillis(),
+            )
+        }
     }
 
     fun setLatestEvent(label: String) {
@@ -41,5 +53,13 @@ object DrivingStateStore {
                 counters = counters,
             )
         }
+    }
+
+    fun setSensorHeartbeat(timestampMs: Long = System.currentTimeMillis()) {
+        _state.update { it.copy(lastSensorEpochMs = timestampMs) }
+    }
+
+    fun setLastAlertOutcome(label: String) {
+        _state.update { it.copy(lastAlertOutcome = label) }
     }
 }

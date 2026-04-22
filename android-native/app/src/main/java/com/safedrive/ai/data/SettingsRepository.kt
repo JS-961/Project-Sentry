@@ -18,11 +18,10 @@ class SettingsRepository(context: Context) {
         val normalizedContacts = newSettings.emergencyContacts
             .map { it.trim() }
             .filter { it.isNotBlank() }
-            .ifEmpty { listOf(DEFAULT_PLACEHOLDER) }
 
         val normalized = newSettings.copy(
             emergencyContacts = normalizedContacts,
-            demoCallNumber = newSettings.demoCallNumber.trim().ifBlank { DEFAULT_PLACEHOLDER },
+            demoCallNumber = newSettings.demoCallNumber.trim(),
             ttsTemplate = newSettings.ttsTemplate.trim().ifBlank { DEFAULT_TTS },
         )
 
@@ -36,16 +35,15 @@ class SettingsRepository(context: Context) {
     }
 
     private fun loadSettings(): AppSettings {
-        val rawContacts = prefs.getString(KEY_CONTACTS, DEFAULT_PLACEHOLDER).orEmpty()
+        val rawContacts = prefs.getString(KEY_CONTACTS, "").orEmpty()
         val contacts = rawContacts
             .split(",", "\n")
             .map { it.trim() }
             .filter { it.isNotBlank() }
-            .ifEmpty { listOf(DEFAULT_PLACEHOLDER) }
 
         return AppSettings(
             emergencyContacts = contacts,
-            demoCallNumber = prefs.getString(KEY_DEMO_NUMBER, DEFAULT_PLACEHOLDER).orEmpty(),
+            demoCallNumber = prefs.getString(KEY_DEMO_NUMBER, "").orEmpty().trim(),
             ttsTemplate = prefs.getString(KEY_TTS, DEFAULT_TTS).orEmpty(),
         )
     }
@@ -55,7 +53,6 @@ class SettingsRepository(context: Context) {
         private const val KEY_CONTACTS = "contacts"
         private const val KEY_DEMO_NUMBER = "demo_number"
         private const val KEY_TTS = "tts_template"
-        private const val DEFAULT_PLACEHOLDER = "+10000000000"
         private const val DEFAULT_TTS = "This is a Project Sentry demo alert. Potential crash detected. Please respond."
     }
 }
