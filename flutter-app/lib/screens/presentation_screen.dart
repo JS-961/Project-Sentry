@@ -116,7 +116,8 @@ class _PresentationScreenState extends State<PresentationScreen> {
           PrimaryButton(
             label: active ? "Stop Demo Trip" : "Start Demo Trip",
             onPressed: _toggleSession,
-            background: active ? Colors.white.withOpacity(0.24) : scheme.secondary,
+            background:
+                active ? Colors.white.withValues(alpha: 0.24) : scheme.secondary,
             foreground: active ? Colors.white : Colors.black,
           ),
           const SizedBox(height: 12),
@@ -251,9 +252,9 @@ class _PresentationScreenState extends State<PresentationScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
       ),
       child: child,
     );

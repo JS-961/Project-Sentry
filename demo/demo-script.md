@@ -35,13 +35,15 @@ Use `android-native/` when you want to prove the real MVP runtime exists.
    truth.
 2. Start Driving Mode.
 3. Show live risk score and counters.
-4. Trigger `Simulate Crash`.
-5. Show the countdown UI and the response options.
-6. Explain the timeout path:
+4. Point out the ML advisory label/confidence as context, while explaining that
+   crash escalation remains rule-based.
+5. Trigger `Simulate Crash`.
+6. Show the countdown UI and the response options.
+7. Explain the timeout path:
    - SMS with a location link
    - call flow intent
    - local TTS intro
-7. Explain that Room persists trip, risk, and crash-alert data locally.
+8. Explain that Room persists trip, risk, and crash-alert data locally.
 
 ## Suggested Talking Points
 
@@ -49,8 +51,10 @@ Use `android-native/` when you want to prove the real MVP runtime exists.
   problem well.
 - Flutter gives polished simulation, validation, and reporting.
 - Native Android gives real service-based monitoring and crash escalation.
+- Advisory ML provides driver-risk and road-condition context without owning
+  emergency escalation.
 - The repository is privacy-first and local-only for the MVP.
-- ML is scaffold only and not overstated.
+- The system is still a capstone MVP, not a certified emergency product.
 
 ## Fallback Plan
 

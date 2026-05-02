@@ -15,6 +15,7 @@ class SimulatedSensorService implements SensorSource {
   int _crashTicks = 0;
   double _speedMps = 15.0;
 
+  @override
   Stream<SensorSample> get stream => _controller.stream;
 
   @override

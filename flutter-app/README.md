@@ -25,7 +25,7 @@ Core features:
 
 From `Project-Sentry/flutter-app/`:
 
-```bash
+```powershell
 flutter pub get
 flutter run
 ```
@@ -54,6 +54,20 @@ For class presentation, the smoothest flow is:
 
 That sequence shows the capstone story clearly: simulate, validate, summarize,
 then present.
+
+## Screenshot Flow
+
+Use this app for the report/presentation screenshots:
+
+1. Home: show the polished entry state if needed for presentation context.
+2. Lab: run a deterministic scenario and capture the PASS/CHECK result.
+3. Validation Tools: show the live-capture card and location-permission note.
+4. Results: show aggregate counts, metrics, and export/report actions.
+5. Presentation Mode: capture the class-demo walkthrough screen.
+
+For the cleanest screenshot pass, use `flutter run -d chrome` or
+`flutter run -d windows`. Use `flutter run -d android` only when you need live
+sensor capture from a physical phone.
 
 ## Notes
 

@@ -13,12 +13,16 @@
 2. Share report inputs and output conventions.
 3. Add launcher or deep-link coordination so demos can jump between the two
    apps.
+4. Define a shared validation/export contract that could support a future
+   cross-platform product without duplicating detection evidence logic.
 
 ## Higher-Risk Work Deliberately Deferred
 
-1. Rewriting the native Android service into Flutter.
-2. Large MethodChannel integrations without a stable contract.
-3. Collapsing both apps into one runtime before the MVP responsibilities are
+1. Turning the MVP into a true cross-platform Android/iOS application.
+2. Rewriting the native Android service into Flutter without a proven safety
+   architecture.
+3. Large MethodChannel integrations without a stable contract.
+4. Collapsing both apps into one runtime before the MVP responsibilities are
    stable.
 
 ## ML Roadmap

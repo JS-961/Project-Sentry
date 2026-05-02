@@ -11,8 +11,8 @@ emergency-response system and must not be presented as one.
 - False negatives can miss real incidents.
 - Phone placement and sensor quality materially affect results.
 - Flutter and native Android are intentionally separate layers today.
-- The ML workspace is scaffold only and should not be described as deployed
-  intelligence.
+- The ML model is deployed only as an advisory risk signal and should not be
+  described as production-grade crash detection.
 
 ## Safety Rules For Testing
 
@@ -44,7 +44,8 @@ When presenting or documenting this project:
 - describe `flutter-app/` as the demo, simulation, validation, and reporting
   layer
 - describe `android-native/` as the real Android MVP runtime
-- describe `ml/` as future work unless real integration is completed
+- describe `ml/` as the advisory training/export workspace, with Android
+  crash escalation still controlled by rule-based validation
 
 ## Human Factors
 

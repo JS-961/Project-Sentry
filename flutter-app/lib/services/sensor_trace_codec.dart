@@ -13,7 +13,7 @@ class SensorTraceCodec {
       ..writeln("# phone_placement=${_metaValue(trace.phonePlacement)}")
       ..writeln("# device_label=${_metaValue(trace.deviceLabel)}")
       ..writeln(
-        "# expected_trigger=${trace.expectedTrigger == null ? "" : trace.expectedTrigger}",
+        "# expected_trigger=${trace.expectedTrigger ?? ""}",
       )
       ..writeln("timestamp,ax_g,ay_g,az_g,speed_mps");
 

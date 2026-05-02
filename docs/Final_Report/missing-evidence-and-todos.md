@@ -1,124 +1,94 @@
-# Missing Evidence and TODOs
+# Evidence Status and Future Validation Notes
 
-This file tracks what is still missing before `final-report-draft.md` can become a strong 40-60 page final submission.
+This file records manual submission items and future validation opportunities. The current final draft includes screenshots, diagrams, survey evidence, preliminary lists, and the generated Word report.
 
 ## High Priority
 
 ### 1. Administrative and Team Details
 
 - Missing:
-  - student names
-  - student IDs
-  - supervisor/advisor name
-  - department/semester/date
-  - signature-page details
+  - final student signatures
+  - final supervisor/advisor signature
+  - coordinator signature or department-approved equivalent
 - Needed for:
-  - title page
   - signature page
   - final submission formatting
 - Action:
-  - fill in all official course metadata from the department template
+  - keep the filled title-page metadata as is
+  - replace the blank signature lines with final approvals before submission
 
-### 2. Final Testing Results and Metrics
+### 2. Future Testing Results and Metrics
 
-- Missing:
+- Future validation opportunities:
   - detection latency measurements
   - false alarms per hour
   - SMS/call/TTS success summary table
   - risk-event accuracy or threshold-behavior summary
+  - physical-device comparison between advisory ML labels and safe observed traces
   - final scenario PASS/CHECK results from Flutter
-- Needed for:
-  - Chapter 5: Testing and Evaluation
-  - Chapter 8: Results and Discussion
-- Action:
-  - run the final Flutter scenario batch
-  - collect Android simulated crash runs on device
-  - summarize results in tables with date, device, permissions, outcome
+- Current treatment:
+  - the report documents current evidence honestly and frames broader measured field validation as future work
 
 ### 3. Final Screenshots and Figures
 
-- Missing:
-  - Android Drive tab screenshot
-  - Android Settings screenshot
-  - Android crash countdown screenshot
-  - Android History screenshot
-  - Android Status screenshot
-  - Flutter Scenario Lab screenshot
-  - Flutter Results Summary screenshot
-  - Flutter Presentation Mode screenshot
-  - exported report pack screenshot or figure
-- Needed for:
-  - Chapters 3, 4, and 5
-  - List of Figures
+- Current state:
+  - Android, Flutter, Mermaid, VS Code, and survey screenshots are captured under `docs/Final_Report/figures/`
+  - Figure 10 is intentionally combined into Figure 9
+  - Figure 15 is intentionally omitted as redundant with Figures 8 and 14
+  - the complete 11-part survey screenshot sequence is preserved in Appendix F
 - Action:
-  - follow `figures-to-capture.md`
-  - capture on clean demo data
-  - avoid real personal numbers or sensitive location data in screenshots
+  - review the generated Word output for image sizing and page breaks
+  - keep screenshots free of real personal numbers or sensitive location data
 
 ### 4. Reference Formatting
 
-- Missing:
-  - final IEEE or APA entries for all cited sources
-  - consistent in-text citation style
-- Needed for:
-  - Chapter 2
-  - Chapter 6
-  - References section
+- Manual check:
+  - final consistency pass after the last Word/PDF formatting step
 - Action:
-  - convert the URLs and source names already listed in `docs/references.md` and `docs/research/validation-research-plan.md` into a final bibliography
-  - do not add any citation that cannot be verified
+  - keep APA as the chosen style
+  - verify that any newly inserted figure captions or text additions use the same in-text citation style
 
 ## Medium Priority
 
 ### 5. Entrepreneurial Validation Evidence
 
-- Missing:
-  - survey results
-  - interview summary
-  - competitor comparison matrix
-- Needed for:
-  - Chapter 6: Entrepreneurial / Innovation Aspects
+- Current state:
+  - survey screenshots are inserted as Figures 16-18
+  - the full 11-part survey sequence is inserted in Appendix F
+- Optional strengthening:
+  - response count and distribution note, if the team wants a stronger survey-method paragraph
+  - larger survey results, if the team wants stronger user validation
 - Action:
-  - if time allows, collect at least a lightweight response set
-  - if not collected, keep Chapter 6 literature-driven and clearly label the missing user-validation evidence
+  - keep the current competitor matrix and lightweight interview evidence
+  - summarize the survey only as strongly as the response count supports
 
 ### 6. Timeline, Milestones, and Teamwork Proof
 
-- Missing:
-  - actual timeline or Gantt chart
-  - milestone dates
+- Optional:
+  - final visual Gantt chart if the team wants one in the PDF
   - advisor meeting records
-  - exact team-role assignments
-- Needed for:
-  - Chapter 7: Project Management and Teamwork
-  - CLO5 alignment
 - Action:
-  - rebuild a simple milestone chart from meeting notes, commit history, or team memory
+  - use the repository-backed timeline and role split already present in the draft
   - add advisor checkpoints only if they can be supported
 
 ### 7. Flutter Execution Evidence
 
 - Current state:
   - Flutter test files exist in the repository
-  - Flutter CLI was not installed on this documentation machine on April 26, 2026
-- Missing:
+  - Flutter CLI was not found on this documentation machine during the May 2, 2026 pass
+- Optional/future:
   - fresh `flutter test` run result
   - fresh `flutter run` or demo verification notes
-- Needed for:
-  - stronger Chapter 5 evidence
 - Action:
   - rerun on a machine with Flutter SDK installed
   - archive terminal output or summarize pass/fail status in the report
 
 ### 8. Android Device Matrix
 
-- Missing:
+- Optional/future:
   - exact device model(s)
   - Android version(s)
   - which features were tested on emulator vs phone
-- Needed for:
-  - Chapter 5 credibility
-  - limitations discussion
 - Action:
   - create a small table with columns:
     - device/emulator
@@ -130,27 +100,23 @@ This file tracks what is still missing before `final-report-draft.md` can become
 
 ### 9. Appendix Content
 
-- Missing:
-  - consolidated installation guide
-  - user manual
-  - structured test-case appendix
-  - dataset/model appendix
-  - repository-structure appendix
+- Optional:
+  - supporting logs for the appendices, if desired
 - Action:
-  - assemble from existing READMEs and docs once main chapters are stable
+  - core appendix content is now drafted in the final-report draft; add visuals or logs only if they strengthen submission quality
 
 ### 10. Polished Figure Exports
 
-- Missing:
-  - rendered Mermaid diagrams as PNG/SVG
-  - consistent figure numbering and captions
+- Current state:
+  - rendered Mermaid diagrams are inserted as Figures 1-3
+  - figure numbering is preserved, with Figure 10 combined into Figure 9 and Figure 15 omitted as redundant
 - Action:
-  - export the Mermaid diagrams from `docs/diagrams.md`
-  - name the files consistently for the final document
+  - review final Word image sizing and page breaks
+  - regenerate the final PDF after Word review
 
 ### 11. Optional Supporting Artifacts
 
-- Missing:
+- Optional:
   - meeting logs
   - commit or PR screenshots
   - report pack ZIP artifact
@@ -165,15 +131,16 @@ This file tracks what is still missing before `final-report-draft.md` can become
 - Android foreground service, permissions, sensors, location, countdown, SMS/call/TTS, Room
 - Flutter scenario lab, live capture, replay, results summary, report exports
 - ethics, limitations, and future-work documentation
-- Android Gradle verification on April 26, 2026:
+- advisory ML training/export artifacts under `ml/models/advisory-risk/`
+- Android advisory JSON model assets under `android-native/app/src/main/assets/`
+- Android Gradle verification on May 2, 2026:
   - `:app:assembleDebug` succeeded
   - `:app:testDebugUnitTest` succeeded with `NO-SOURCE`
   - `:app:lintDebug` succeeded
 
-## Recommended Next Evidence to Collect
+## Recommended Final Submission Steps
 
-1. Final screenshots for both apps.
-2. One clean Android simulated-crash test table.
-3. One final Flutter scenario-batch export or report pack.
-4. Team/admin metadata and timeline.
-5. Final formatted bibliography.
+1. Review the final Word report for image sizing and page breaks.
+2. Add final signatures or department approval equivalents.
+3. Add optional measured tables only if the team wants stronger quantitative evidence.
+4. Export one clean final PDF.

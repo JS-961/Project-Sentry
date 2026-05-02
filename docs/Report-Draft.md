@@ -29,7 +29,7 @@
 ## 2. Related Work
 - Academic references summary: **[Fill with citations]**
 - Industry references summary: **[Fill with citations]**
-- Identified gaps: See **docs/architecture.md** and **docs/references.md**.
+- Identified gaps: See **docs/Architecture.md** and **docs/references.md**.
 
 ## 3. Requirements
 - Functional requirements: See **docs/requirements-traceability.md**.
@@ -37,9 +37,9 @@
 - Constraints: Short timeline, simulated data, limited hardware access.
 
 ## 4. System Design
-- Architecture overview: See **docs/architecture.md**.
+- Architecture overview: See **docs/Architecture.md**.
 - Key components: Trip Controller, Detection Engine, Scenario Lab, Event Log.
-- Data flow and algorithm logic: See **docs/diagrams.md**.
+- Data flow and algorithm logic: See **docs/Diagrams.md**.
 
 ## 5. Implementation
 - Tech stack: Flutter/Dart, sensors_plus, shared_preferences, geolocator, permission_handler, archive.

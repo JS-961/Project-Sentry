@@ -1,5 +1,4 @@
 import "dart:convert";
-import "dart:typed_data";
 import "dart:math";
 import "dart:ui" as ui;
 
@@ -308,9 +307,9 @@ class _ResultsSummaryScreenState extends State<ResultsSummaryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
         "$label $value",
@@ -384,7 +383,7 @@ class _ResultsSummaryScreenState extends State<ResultsSummaryScreen> {
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.black12),
               ),
@@ -611,7 +610,7 @@ class _ResultsSummaryScreenState extends State<ResultsSummaryScreen> {
 
   Future<void> _clearLog(BuildContext context) async {
     await widget.eventLog.clear();
-    if (!mounted) return;
+    if (!context.mounted) return;
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Event log cleared")),
@@ -919,7 +918,7 @@ class _BarColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barColor = faded ? color.withOpacity(0.35) : color;
+    final barColor = faded ? color.withValues(alpha: 0.35) : color;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [

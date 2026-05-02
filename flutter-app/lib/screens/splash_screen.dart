@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Text(
               "Safety that's always with you",
               style: TextStyle(
-                color: scheme.secondary.withOpacity(0.9),
+                color: scheme.secondary.withValues(alpha: 0.9),
                 fontSize: 14,
               ),
             ),

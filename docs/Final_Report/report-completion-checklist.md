@@ -10,65 +10,68 @@ Status key:
 
 | Item | Status | Notes |
 | --- | --- | --- |
-| Title page | Partial | Placeholder created; needs names, IDs, supervisor, semester, date |
-| Signature page | Missing | Needs final signatures/approval workflow |
-| Acknowledgments | Partial | Optional; placeholder only |
-| Abstract | Complete | Needs final measured results sentence |
-| Table of contents | Missing | Generate after final formatting |
-| List of figures | Missing | Requires final figure numbering |
-| List of tables | Missing | Requires final table numbering |
+| Title page | Complete | Student names, IDs, supervisor, department, semester, and submission date are filled |
+| Signature page | Partial | Signature lines are present; real signatures/department approval still needed |
+| Acknowledgments | Complete | Short acknowledgment paragraph included |
+| Abstract | Complete | Honest current-state abstract drafted with advisory ML included; can absorb final device metrics later |
+| Table of contents | Complete | Static final table of contents is filled from report headings |
+| List of figures | Complete | Figure list is filled with captured, combined, omitted, and appendix figures |
+| List of tables | Complete | Table list is filled with main report and appendix test-case tables |
 | Introduction | Complete | Strong draft present |
-| Literature review / related work | Partial | Needs fuller academic citations and final reference formatting |
+| Literature review / related work | Complete | Strengthened with official sources and academic citations |
 | System analysis and design | Complete | Drafted from repository evidence |
 | Implementation | Complete | Drafted from source code and docs |
-| Testing and evaluation | Partial | Structure is strong; final measured metrics still needed |
-| Entrepreneurial / innovation aspects | Partial | Drafted, but competitor matrix and user-validation evidence still needed |
-| Project management and teamwork | Partial | Structure present; actual team names, timeline, and advisor logs missing |
+| Testing and evaluation | Complete | Current evidence is documented honestly; broader field/device metrics are framed as future validation |
+| Entrepreneurial / innovation aspects | Complete | Market relevance, competitor matrix, and lightweight qualitative evidence are now written |
+| Project management and teamwork | Complete | Repository-backed timeline, milestones, role split, and collaboration narrative are drafted |
 | Results and discussion | Complete | Honest current-state discussion present |
 | Conclusion and future work | Complete | Strong expandable draft present |
-| References | Partial | Source list exists; IEEE/APA formatting still needed |
-| Appendices | Partial | Placeholder sections created; content still needed |
+| References | Complete | APA-style references inserted for the main external sources currently cited |
+| Appendices | Partial | Installation, user manual, test cases, advisory model notes, and repository-structure appendices are drafted; final screenshots/logs may still be added |
 
 ## CLO / Rubric Coverage
 
 | CLO | Rubric Focus | Status | What Still Strengthens It |
 | --- | --- | --- | --- |
-| CLO1 | Problem analysis and gap identification | Complete | Add a few stronger peer-reviewed citations |
-| CLO2 | Feasibility, innovation, adaptability | Partial | Add competitor matrix, survey/interview data, and explicit feasibility evidence |
-| CLO3 | Design, implementation, technical rigor, testing | Partial | Add final metrics, Android tests, device matrix, and screenshots |
-| CLO4 | Written report and presentation quality | Partial | Add final figures, captions, formatting, and polished references |
-| CLO5 | Teamwork and project management | Partial | Add real team roles, timeline, milestones, advisor interaction logs |
+| CLO1 | Problem analysis and gap identification | Complete | Problem framing and gap analysis are now explicit and source-backed |
+| CLO2 | Feasibility, innovation, adaptability | Complete | Competitor matrix, feasibility framing, and lightweight qualitative evidence are now included |
+| CLO3 | Design, implementation, technical rigor, testing | Partial | Add final field metrics, Android unit tests beyond `NO-SOURCE`, device matrix, screenshots, and ML-on-trace comparison |
+| CLO4 | Written report and presentation quality | Partial | Add final figures, captions, automatic lists, and final Word polish |
+| CLO5 | Teamwork and project management | Complete | Role split, repo-backed milestones, and collaboration structure are documented |
 
 ## Evidence Package Checklist
 
-- `Missing`: final student names, IDs, supervisor/advisor names
+- `Complete`: final student names, IDs, and supervisor/advisor name are filled in the draft
 - `Missing`: signatures or department-approved equivalent
-- `Missing`: final screenshots for Android and Flutter flows
-- `Missing`: exported diagrams as figure images
-- `Missing`: final measured crash/risk evaluation metrics
-- `Missing`: physical-device testing log with device model and Android version
-- `Missing`: survey/interview summary if entrepreneurial chapter will rely on user feedback
-- `Missing`: competitor matrix from official product pages
-- `Partial`: Android verification evidence exists; include command outputs or summarized results
+- `Complete`: final screenshots for Android and Flutter flows are inserted
+- `Complete`: exported diagrams are inserted as figure images
+- `Complete`: survey response screenshots are inserted as Figures 16-18 and Appendix F
+- `Complete`: figure-by-figure screenshot runbook exists in `docs/Final_Report/figures-to-capture.md`
+- `Future validation`: final measured crash/risk field metrics
+- `Future validation`: broader physical-device matrix with device model and Android version
+- `Complete`: advisory ML training outputs and Android JSON assets are documented
+- `Complete`: Android `assembleDebug`, `testDebugUnitTest`, and `lintDebug` were rerun successfully on May 2, 2026
+- `Partial`: lightweight interview summary and survey screenshots are present; response count/distribution wording can still be strengthened
+- `Complete`: competitor matrix from official product pages is drafted
 - `Partial`: Flutter tests exist in repo; rerun them on a machine with Flutter SDK and capture results
 - `Partial`: installation guide and user manual can be assembled from existing READMEs
 - `Missing`: advisor meeting notes or milestone confirmations if required
 
 ## Final Formatting Checklist
 
-- `Missing`: move draft into Word/Google Docs/LaTeX with Times New Roman or Arial, 12 pt, double spacing
-- `Missing`: apply required margins: 1.5 inch left, 1 inch top/right/bottom
-- `Missing`: set Roman numeral page numbering for preliminary pages
-- `Missing`: set Arabic numeral page numbering for main chapters
-- `Missing`: number all figures and tables sequentially
-- `Missing`: add captions above tables and below figures
-- `Missing`: unify in-text citation style with final reference list
-- `Missing`: generate final table of contents, list of figures, and list of tables
+- `Complete`: move draft into Word format with report template styling
+- `Complete`: apply required margins through the report builder
+- `Complete`: set Roman numeral page numbering for preliminary pages
+- `Complete`: set Arabic numeral page numbering for main chapters
+- `Complete`: number figures and tables sequentially, with Figure 10 combined into Figure 9 and Figure 15 omitted as redundant
+- `Complete`: captions are present and preliminary lists are filled
+- `Complete`: unify in-text citation style with final reference list
+- `Complete`: generate final table of contents, list of figures, and list of tables
 - `Missing`: export or print as one clean PDF
 
 ## Recommended Submission Order
 
-1. Collect missing evidence first: screenshots, metrics, team/admin details, timeline, citations.
+1. Collect missing evidence first: signatures, screenshots, diagrams, metrics, and device-test records.
 2. Update the draft with measured results and figure references.
 3. Convert the Markdown draft into the department's final document format.
 4. Do a final pass for citation consistency, grammar, and page layout.

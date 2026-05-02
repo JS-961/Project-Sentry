@@ -25,9 +25,17 @@ This repository is intentionally split by responsibility.
 3. If time allows, switch to `android-native/` to demonstrate the real Android
    runtime and explain why it remains separate.
 
+## Screenshot And Setup Reference
+
+Use `docs/setup-and-screenshot-guide.md` for the current run commands,
+screenshot order, Android permission setup, and survey-response capture notes.
+
 ## Recommended Engineering Focus
 
 - continue product and runtime work in `android-native/`
 - continue capstone evidence, validation tooling, and polished demo work in
   `flutter-app/`
-- keep shared methodology and future ML notes in `docs/` and `ml/`
+- keep shared methodology and advisory ML training/export notes in `docs/` and
+  `ml/`
+- keep the proprietary license terms in `LICENSE` and summarize them from the
+  root `README.md`

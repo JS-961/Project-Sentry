@@ -6,7 +6,7 @@ Current role:
 
 - collect anonymized training and evaluation data
 - prototype preprocessing and model experiments
-- export future TensorFlow Lite artifacts for Android integration
+- export lightweight Android-readable model artifacts for advisory integration
 
 Current status:
 

@@ -82,7 +82,8 @@ Each trace file stores:
 
 - live speed depends on location permission and GPS availability
 - thresholds are still heuristic and need calibration against real traces
-- current evaluation is rule-based, not ML-based
+- Flutter replay evaluation remains rule-based; Android now also exposes an
+  advisory ML risk label that should be compared against safe captured traces
 - trace management is local-only for now
 
 ## Recommended Next Steps For Handoff
