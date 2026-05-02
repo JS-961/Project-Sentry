@@ -9,7 +9,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -35,6 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SafeDriveTheme {
                 val navController = rememberNavController()
+                var permissionExplanation by remember { mutableStateOf<PermissionExplanationRequest?>(null) }
                 val drivingState by DrivingStateStore.state.collectAsStateWithLifecycle()
                 val settings by app.settingsRepository.settings.collectAsStateWithLifecycle()
                 val recentTrips by tripDao.observeRecentTrips(20).collectAsStateWithLifecycle(emptyList())
@@ -58,6 +74,21 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                permissionExplanation?.let { request ->
+                    PermissionExplanationDialog(
+                        request = request,
+                        onProceed = {
+                            permissionExplanation = null
+                            permissionLauncher.launch(request.permissions.toTypedArray())
+                        },
+                        onDismiss = {
+                            pendingForegroundAction = null
+                            permissionExplanation = null
+                            DrivingStateStore.setLatestEvent("Permission request postponed")
+                        },
+                    )
+                }
+
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
                         HomeScreen(
@@ -73,7 +104,7 @@ class MainActivity : ComponentActivity() {
                             onStartDriving = {
                                 requestPermissionsThenStart(
                                     action = DrivingModeService.ACTION_START_DRIVING,
-                                    launcher = permissionLauncher,
+                                    showExplanation = { permissionExplanation = it },
                                 )
                             },
                             onStopDriving = {
@@ -82,7 +113,7 @@ class MainActivity : ComponentActivity() {
                             onSimulateCrash = {
                                 requestPermissionsThenStart(
                                     action = DrivingModeService.ACTION_SIMULATE_CRASH,
-                                    launcher = permissionLauncher,
+                                    showExplanation = { permissionExplanation = it },
                                 )
                             },
                             onOpenSettings = {
@@ -100,7 +131,7 @@ class MainActivity : ComponentActivity() {
                             onTestCrashFlow = {
                                 requestPermissionsThenStart(
                                     action = DrivingModeService.ACTION_SIMULATE_CRASH,
-                                    launcher = permissionLauncher,
+                                    showExplanation = { permissionExplanation = it },
                                 )
                             },
                         )
@@ -131,7 +162,7 @@ class MainActivity : ComponentActivity() {
 
     private fun requestPermissionsThenStart(
         action: String,
-        launcher: androidx.activity.result.ActivityResultLauncher<Array<String>>,
+        showExplanation: (PermissionExplanationRequest) -> Unit,
     ) {
         val missing = missingStartPermissions()
         if (missing.isEmpty()) {
@@ -140,7 +171,12 @@ class MainActivity : ComponentActivity() {
             startForegroundServiceAction(action)
         } else {
             pendingForegroundAction = action
-            launcher.launch(missing.toTypedArray())
+            showExplanation(
+                PermissionExplanationRequest(
+                    permissions = missing,
+                    items = permissionExplanationItems(missing),
+                ),
+            )
         }
     }
 
@@ -183,6 +219,46 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun permissionExplanationItems(permissions: List<String>): List<PermissionExplanationItem> {
+        return buildList {
+            if (
+                permissions.contains(Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)
+            ) {
+                add(
+                    PermissionExplanationItem(
+                        title = "Location",
+                        body = "Used during driving mode to track speed, route context, and the location attached to an emergency alert.",
+                    ),
+                )
+            }
+            if (permissions.contains(Manifest.permission.SEND_SMS)) {
+                add(
+                    PermissionExplanationItem(
+                        title = "SMS",
+                        body = "Used only for crash escalation so Sentry can send your saved contacts the alert message and location link.",
+                    ),
+                )
+            }
+            if (permissions.contains(Manifest.permission.CALL_PHONE)) {
+                add(
+                    PermissionExplanationItem(
+                        title = "Phone call",
+                        body = "Used only after the crash countdown to open the emergency call flow for your saved number.",
+                    ),
+                )
+            }
+            if (permissions.contains(Manifest.permission.POST_NOTIFICATIONS)) {
+                add(
+                    PermissionExplanationItem(
+                        title = "Notifications",
+                        body = "Used to keep driving mode visible and show crash countdown alerts when Sentry is not in the foreground.",
+                    ),
+                )
+            }
+        }
+    }
+
     private fun publishOptionalPermissionWarningIfNeeded() {
         val missing = buildList {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -202,3 +278,55 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+@Composable
+private fun PermissionExplanationDialog(
+    request: PermissionExplanationRequest,
+    onProceed: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Before Permissions") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    "Sentry monitors phone motion and GPS speed while driving mode is active. Android will ask for the permissions below after this step.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                request.items.forEach { item ->
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(item.title, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                        Text(item.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    "You can continue now or come back later.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = onProceed) {
+                Text("Proceed to Permissions")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Not Now")
+            }
+        },
+    )
+}
+
+private data class PermissionExplanationRequest(
+    val permissions: List<String>,
+    val items: List<PermissionExplanationItem>,
+)
+
+private data class PermissionExplanationItem(
+    val title: String,
+    val body: String,
+)

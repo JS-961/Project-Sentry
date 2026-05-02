@@ -21,7 +21,7 @@ capstone story.
 2. Show Home, Lab, and Results tabs.
 3. Enter Scenario Lab and run a scripted scenario.
 4. If relevant, show the live trace capture tooling and explain that it supports
-   safe validation on real Android hardware.
+   safe validation on real Android hardware.   
 5. Open Presentation Mode for a clean walkthrough.
 6. Open Results and show report/export options.
 7. Close by explaining that this app is optimized for reproducible validation

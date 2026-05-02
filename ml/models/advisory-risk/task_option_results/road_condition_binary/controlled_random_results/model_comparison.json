@@ -1,0 +1,266 @@
+[
+  {
+    "mode": "road_condition_binary_controlled_random",
+    "model_name": "random_forest",
+    "android_exportable": true,
+    "accuracy": 0.8922345483359746,
+    "macro_f1": 0.8703999033466232,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        411,
+        22
+      ],
+      [
+        46,
+        152
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.899343544857768,
+        "recall": 0.9491916859122402,
+        "f1-score": 0.9235955056179775,
+        "support": 433.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.8735632183908046,
+        "recall": 0.7676767676767676,
+        "f1-score": 0.8172043010752689,
+        "support": 198.0
+      },
+      "accuracy": 0.8922345483359746,
+      "macro avg": {
+        "precision": 0.8864533816242863,
+        "recall": 0.858434226794504,
+        "f1-score": 0.8703999033466232,
+        "support": 631.0
+      },
+      "weighted avg": {
+        "precision": 0.8912539970915894,
+        "recall": 0.8922345483359746,
+        "f1-score": 0.8902112607693938,
+        "support": 631.0
+      }
+    },
+    "split": {
+      "method": "Stratified random row split",
+      "note": "Controlled random split is for dataset/demo comparison only and can be optimistic.",
+      "unique_groups": 1,
+      "train_rows": 2522,
+      "test_rows": 631,
+      "train_groups": 1,
+      "test_groups": 1,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1731,
+        "ROAD_ANOMALY": 791
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 433,
+        "ROAD_ANOMALY": 198
+      }
+    },
+    "mean_test_confidence": 0.8413608745317378
+  },
+  {
+    "mode": "road_condition_binary_controlled_random",
+    "model_name": "gradient_boosting",
+    "android_exportable": false,
+    "accuracy": 0.884310618066561,
+    "macro_f1": 0.8639704688076781,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        401,
+        32
+      ],
+      [
+        41,
+        157
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.9072398190045249,
+        "recall": 0.9260969976905312,
+        "f1-score": 0.9165714285714286,
+        "support": 433.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.8306878306878307,
+        "recall": 0.7929292929292929,
+        "f1-score": 0.8113695090439277,
+        "support": 198.0
+      },
+      "accuracy": 0.884310618066561,
+      "macro avg": {
+        "precision": 0.8689638248461777,
+        "recall": 0.8595131453099121,
+        "f1-score": 0.8639704688076781,
+        "support": 631.0
+      },
+      "weighted avg": {
+        "precision": 0.8832187513552293,
+        "recall": 0.884310618066561,
+        "f1-score": 0.8835603666594711,
+        "support": 631.0
+      }
+    },
+    "split": {
+      "method": "Stratified random row split",
+      "note": "Controlled random split is for dataset/demo comparison only and can be optimistic.",
+      "unique_groups": 1,
+      "train_rows": 2522,
+      "test_rows": 631,
+      "train_groups": 1,
+      "test_groups": 1,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1731,
+        "ROAD_ANOMALY": 791
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 433,
+        "ROAD_ANOMALY": 198
+      }
+    },
+    "mean_test_confidence": 0.8225180239508971
+  },
+  {
+    "mode": "road_condition_binary_controlled_random",
+    "model_name": "extra_trees",
+    "android_exportable": true,
+    "accuracy": 0.8748019017432647,
+    "macro_f1": 0.8523626886226658,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        399,
+        34
+      ],
+      [
+        45,
+        153
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.8986486486486487,
+        "recall": 0.9214780600461894,
+        "f1-score": 0.9099201824401368,
+        "support": 433.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.8181818181818182,
+        "recall": 0.7727272727272727,
+        "f1-score": 0.7948051948051948,
+        "support": 198.0
+      },
+      "accuracy": 0.8748019017432647,
+      "macro avg": {
+        "precision": 0.8584152334152335,
+        "recall": 0.847102666386731,
+        "f1-score": 0.8523626886226658,
+        "support": 631.0
+      },
+      "weighted avg": {
+        "precision": 0.8733991519253009,
+        "recall": 0.8748019017432647,
+        "f1-score": 0.8737985222947826,
+        "support": 631.0
+      }
+    },
+    "split": {
+      "method": "Stratified random row split",
+      "note": "Controlled random split is for dataset/demo comparison only and can be optimistic.",
+      "unique_groups": 1,
+      "train_rows": 2522,
+      "test_rows": 631,
+      "train_groups": 1,
+      "test_groups": 1,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1731,
+        "ROAD_ANOMALY": 791
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 433,
+        "ROAD_ANOMALY": 198
+      }
+    },
+    "mean_test_confidence": 0.7644763440120861
+  },
+  {
+    "mode": "road_condition_binary_controlled_random",
+    "model_name": "logistic_regression",
+    "android_exportable": true,
+    "accuracy": 0.751188589540412,
+    "macro_f1": 0.725214617571597,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        334,
+        99
+      ],
+      [
+        58,
+        140
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.8520408163265306,
+        "recall": 0.7713625866050808,
+        "f1-score": 0.8096969696969697,
+        "support": 433.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.5857740585774058,
+        "recall": 0.7070707070707071,
+        "f1-score": 0.6407322654462243,
+        "support": 198.0
+      },
+      "accuracy": 0.751188589540412,
+      "macro avg": {
+        "precision": 0.7189074374519682,
+        "recall": 0.739216646837894,
+        "f1-score": 0.725214617571597,
+        "support": 631.0
+      },
+      "weighted avg": {
+        "precision": 0.7684895991564408,
+        "recall": 0.751188589540412,
+        "f1-score": 0.7566779341317597,
+        "support": 631.0
+      }
+    },
+    "split": {
+      "method": "Stratified random row split",
+      "note": "Controlled random split is for dataset/demo comparison only and can be optimistic.",
+      "unique_groups": 1,
+      "train_rows": 2522,
+      "test_rows": 631,
+      "train_groups": 1,
+      "test_groups": 1,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1731,
+        "ROAD_ANOMALY": 791
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 433,
+        "ROAD_ANOMALY": 198
+      }
+    },
+    "mean_test_confidence": 0.7391411868112949
+  }
+]

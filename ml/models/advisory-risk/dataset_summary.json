@@ -1,0 +1,26 @@
+{
+  "window_rows": 3153,
+  "feature_count": 36,
+  "recording_count": 23,
+  "label_counts": {
+    "NORMAL": 1371,
+    "ROAD_ANOMALY": 989,
+    "AGGRESSIVE": 793
+  },
+  "group_counts_by_label": {
+    "AGGRESSIVE": 2,
+    "NORMAL": 4,
+    "ROAD_ANOMALY": 17
+  },
+  "source_counts": {
+    "STRIDE": 3153
+  },
+  "skipped_recordings": 31,
+  "skipped_by_source_reason": [
+    {
+      "source": "MENDELEY",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels",
+      "count": 31
+    }
+  ]
+}

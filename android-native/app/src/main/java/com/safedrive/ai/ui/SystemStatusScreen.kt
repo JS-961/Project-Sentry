@@ -91,6 +91,9 @@ private fun StatusSummaryCard(
         StatusRow("Location permission", if (permissionStatus.location) "Granted" else "Missing", permissionStatus.location)
         StatusRow("Crash permissions", if (permissionStatus.crashFlowReady) "Ready" else "Limited", permissionStatus.crashFlowReady)
         StatusRow("Latest event", state.latestEventLabel, true)
+        StatusRow("ML Advisory", mlAdvisoryStatus(state.mlModelSource), state.mlModelSource.startsWith("trained-json"))
+        StatusRow("ML result", "${state.mlRiskLabel.replace("_", " ")} ${state.mlRiskScore}/100", true)
+        StatusRow("ML confidence", "${(state.mlRiskConfidence * 100).toInt()}%", state.mlRiskConfidence >= 0.45f)
         StatusRow("Last alert", state.lastAlertOutcome ?: "None yet", true)
     }
 }
@@ -103,7 +106,7 @@ private fun ReadinessCard(
 ) {
     val contactsReady = settings.emergencyContacts.isNotEmpty()
     val callReady = settings.demoCallNumber.isNotBlank()
-    StatusCard(title = "Preflight Readiness", subtitle = "These are the items that usually break live demos.") {
+    StatusCard(title = "Preflight Readiness", subtitle = "These are the items to verify before a live walkthrough.") {
         StatusRow("Emergency contacts", if (contactsReady) "${settings.emergencyContacts.size} saved" else "Missing", contactsReady)
         StatusRow("Call number", if (callReady) settings.demoCallNumber else "Missing", callReady)
         StatusRow("Notifications", if (permissionStatus.notifications) "Granted" else "Missing", permissionStatus.notifications)
@@ -133,7 +136,7 @@ private fun DataHealthCard(
 
 @Composable
 private fun DemoScriptCard() {
-    StatusCard(title = "Capstone Demo Script", subtitle = "Fast path if graders ask what to watch.") {
+    StatusCard(title = "Test Checklist", subtitle = "Fast path before a live walkthrough.") {
         ScriptStep("1", "Open Status and show permissions/config readiness.")
         ScriptStep("2", "Start Drive from Home and point out GPS/sensor status.")
         ScriptStep("3", "Use Simulate Crash to show countdown and escalation path.")
@@ -210,5 +213,13 @@ private fun ScriptStep(index: String, text: String) {
             Text(index, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp), fontWeight = FontWeight.Bold)
         }
         Text(text, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+private fun mlAdvisoryStatus(source: String): String {
+    return when {
+        source.contains("demo-assist") -> "Assist"
+        source == "trained-json" -> "Trained Model"
+        else -> "Baseline"
     }
 }

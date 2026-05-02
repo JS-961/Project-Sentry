@@ -1,0 +1,53 @@
+{
+  "mode": "road_condition_binary_strict_grouped_cv",
+  "method": "StratifiedGroupKFold(n_splits=5)",
+  "fold_count": 5,
+  "labels": [
+    "NORMAL_ROAD",
+    "ROAD_ANOMALY"
+  ],
+  "unique_groups": 23,
+  "summary_by_model": [
+    {
+      "model_name": "random_forest",
+      "android_exportable": true,
+      "folds": 5,
+      "accuracy_mean": 0.5566077377900496,
+      "accuracy_std": 0.1417515094162407,
+      "macro_f1_mean": 0.4997300520206183,
+      "macro_f1_std": 0.11323114370751858,
+      "mean_test_confidence": 0.7300514980204031
+    },
+    {
+      "model_name": "gradient_boosting",
+      "android_exportable": false,
+      "folds": 5,
+      "accuracy_mean": 0.5116512806421949,
+      "accuracy_std": 0.13735075861707807,
+      "macro_f1_mean": 0.4682848866850147,
+      "macro_f1_std": 0.09606488503408493,
+      "mean_test_confidence": 0.7523605918885276
+    },
+    {
+      "model_name": "extra_trees",
+      "android_exportable": true,
+      "folds": 5,
+      "accuracy_mean": 0.47929651818187596,
+      "accuracy_std": 0.11844885048129836,
+      "macro_f1_mean": 0.4346017180188008,
+      "macro_f1_std": 0.10500236035483367,
+      "mean_test_confidence": 0.697628677780313
+    },
+    {
+      "model_name": "logistic_regression",
+      "android_exportable": true,
+      "folds": 5,
+      "accuracy_mean": 0.39236202812478205,
+      "accuracy_std": 0.06541249423524002,
+      "macro_f1_mean": 0.3662472281794158,
+      "macro_f1_std": 0.06164248703330726,
+      "mean_test_confidence": 0.7139375481509642
+    }
+  ],
+  "note": "Strict grouped cross-validation holds out full sessions/groups."
+}

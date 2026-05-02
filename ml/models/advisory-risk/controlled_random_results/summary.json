@@ -1,0 +1,104 @@
+{
+  "mode": "controlled_random",
+  "best_model": {
+    "mode": "controlled_random",
+    "model_name": "gradient_boosting",
+    "android_exportable": false,
+    "accuracy": 0.8367670364500792,
+    "macro_f1": 0.8348444197758512,
+    "labels": [
+      "AGGRESSIVE",
+      "NORMAL",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        139,
+        10,
+        10
+      ],
+      [
+        26,
+        230,
+        18
+      ],
+      [
+        11,
+        28,
+        159
+      ]
+    ],
+    "classification_report": {
+      "AGGRESSIVE": {
+        "precision": 0.7897727272727273,
+        "recall": 0.8742138364779874,
+        "f1-score": 0.8298507462686567,
+        "support": 159.0
+      },
+      "NORMAL": {
+        "precision": 0.8582089552238806,
+        "recall": 0.8394160583941606,
+        "f1-score": 0.8487084870848709,
+        "support": 274.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.8502673796791443,
+        "recall": 0.803030303030303,
+        "f1-score": 0.825974025974026,
+        "support": 198.0
+      },
+      "accuracy": 0.8367670364500792,
+      "macro avg": {
+        "precision": 0.8327496873919173,
+        "recall": 0.8388867326341503,
+        "f1-score": 0.8348444197758512,
+        "support": 631.0
+      },
+      "weighted avg": {
+        "precision": 0.838472359024053,
+        "recall": 0.8367670364500792,
+        "f1-score": 0.8368229021566216,
+        "support": 631.0
+      }
+    },
+    "split": {
+      "method": "Stratified random row split",
+      "note": "Controlled random split is for dataset/demo comparison only and can be optimistic.",
+      "unique_groups": 1,
+      "train_rows": 2522,
+      "test_rows": 631,
+      "train_groups": 1,
+      "test_groups": 1,
+      "train_label_counts": {
+        "NORMAL": 1097,
+        "ROAD_ANOMALY": 791,
+        "AGGRESSIVE": 634
+      },
+      "test_label_counts": {
+        "NORMAL": 274,
+        "ROAD_ANOMALY": 198,
+        "AGGRESSIVE": 159
+      }
+    },
+    "mean_test_confidence": 0.7739497791520602
+  },
+  "split": {
+    "method": "Stratified random row split",
+    "note": "Controlled random split is for dataset/demo comparison only and can be optimistic.",
+    "unique_groups": 1,
+    "train_rows": 2522,
+    "test_rows": 631,
+    "train_groups": 1,
+    "test_groups": 1,
+    "train_label_counts": {
+      "NORMAL": 1097,
+      "ROAD_ANOMALY": 791,
+      "AGGRESSIVE": 634
+    },
+    "test_label_counts": {
+      "NORMAL": 274,
+      "ROAD_ANOMALY": 198,
+      "AGGRESSIVE": 159
+    }
+  }
+}

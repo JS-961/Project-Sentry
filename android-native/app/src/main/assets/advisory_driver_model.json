@@ -1,0 +1,431 @@
+{
+  "format": "project-sentry-advisory-risk-model-v3",
+  "version": 3,
+  "model_name": "logistic_regression",
+  "feature_names": [
+    "accel_mean",
+    "accel_std",
+    "accel_min",
+    "accel_max",
+    "accel_rms",
+    "accel_p50",
+    "accel_p75",
+    "accel_p90",
+    "accel_p95",
+    "accel_energy",
+    "accel_peak_count",
+    "accel_sma",
+    "jerk_mean",
+    "jerk_std",
+    "jerk_min",
+    "jerk_max",
+    "jerk_rms",
+    "jerk_p90",
+    "jerk_p95",
+    "jerk_energy",
+    "jerk_peak_count",
+    "gyro_mean",
+    "gyro_std",
+    "gyro_min",
+    "gyro_max",
+    "gyro_rms",
+    "gyro_p90",
+    "gyro_p95",
+    "gyro_energy",
+    "gyro_peak_count",
+    "gyro_sma",
+    "motion_mean",
+    "motion_std",
+    "motion_max",
+    "motion_rms",
+    "motion_energy"
+  ],
+  "classes": [
+    "AGGRESSIVE",
+    "NORMAL"
+  ],
+  "score_ranges": {
+    "AGGRESSIVE": [
+      40,
+      70
+    ],
+    "NORMAL": [
+      0,
+      30
+    ]
+  },
+  "training": {
+    "selection_basis": "best Android-exportable strict grouped cross-validation macro F1 mean for this binary task",
+    "task_name": "driver_behavior_binary",
+    "task_results": {
+      "labels": [
+        "AGGRESSIVE",
+        "NORMAL"
+      ],
+      "description": "driver behavior only: NORMAL vs AGGRESSIVE; road-anomaly rows excluded",
+      "strict_grouped_best": {
+        "mode": "driver_behavior_binary_strict_grouped",
+        "model_name": "logistic_regression",
+        "android_exportable": true,
+        "accuracy": 0.6619047619047619,
+        "macro_f1": 0.47638279192273925,
+        "labels": [
+          "AGGRESSIVE",
+          "NORMAL"
+        ],
+        "confusion_matrix": [
+          [
+            35,
+            338
+          ],
+          [
+            17,
+            660
+          ]
+        ],
+        "classification_report": {
+          "AGGRESSIVE": {
+            "precision": 0.6730769230769231,
+            "recall": 0.0938337801608579,
+            "f1-score": 0.16470588235294117,
+            "support": 373.0
+          },
+          "NORMAL": {
+            "precision": 0.6613226452905812,
+            "recall": 0.9748892171344166,
+            "f1-score": 0.7880597014925373,
+            "support": 677.0
+          },
+          "accuracy": 0.6619047619047619,
+          "macro avg": {
+            "precision": 0.6671997841837521,
+            "recall": 0.5343614986476373,
+            "f1-score": 0.47638279192273925,
+            "support": 1050.0
+          },
+          "weighted avg": {
+            "precision": 0.6654982125423008,
+            "recall": 0.6619047619047619,
+            "f1-score": 0.566620678121995,
+            "support": 1050.0
+          }
+        },
+        "split": {
+          "method": "StratifiedGroupKFold(n_splits=2)",
+          "note": "Strict grouped split estimates generalization to held-out sessions.",
+          "unique_groups": 6,
+          "train_rows": 1114,
+          "test_rows": 1050,
+          "train_groups": 3,
+          "test_groups": 3,
+          "train_label_counts": {
+            "NORMAL": 694,
+            "AGGRESSIVE": 420
+          },
+          "test_label_counts": {
+            "NORMAL": 677,
+            "AGGRESSIVE": 373
+          }
+        },
+        "mean_test_confidence": 0.9507124883735335
+      },
+      "strict_grouped_cv": {
+        "mode": "driver_behavior_binary_strict_grouped_cv",
+        "method": "StratifiedGroupKFold(n_splits=2)",
+        "fold_count": 2,
+        "labels": [
+          "AGGRESSIVE",
+          "NORMAL"
+        ],
+        "unique_groups": 6,
+        "summary_by_model": [
+          {
+            "model_name": "logistic_regression",
+            "android_exportable": true,
+            "folds": 2,
+            "accuracy_mean": 0.698097802855433,
+            "accuracy_std": 0.03619304095067111,
+            "macro_f1_mean": 0.6035593655713358,
+            "macro_f1_std": 0.12717657364859664,
+            "mean_test_confidence": 0.9395957005932317
+          },
+          {
+            "model_name": "extra_trees",
+            "android_exportable": true,
+            "folds": 2,
+            "accuracy_mean": 0.5232940070103446,
+            "accuracy_std": 0.11575361203727452,
+            "macro_f1_mean": 0.39763881776260745,
+            "macro_f1_std": 0.020470208383371935,
+            "mean_test_confidence": 0.8143788390493326
+          },
+          {
+            "model_name": "random_forest",
+            "android_exportable": true,
+            "folds": 2,
+            "accuracy_mean": 0.482001367872104,
+            "accuracy_std": 0.1570462511755151,
+            "macro_f1_mean": 0.3695700893429914,
+            "macro_f1_std": 0.046325134340002405,
+            "mean_test_confidence": 0.8021003077962935
+          },
+          {
+            "model_name": "gradient_boosting",
+            "android_exportable": false,
+            "folds": 2,
+            "accuracy_mean": 0.46228007181328545,
+            "accuracy_std": 0.17771992818671456,
+            "macro_f1_mean": 0.3458943325822739,
+            "macro_f1_std": 0.07264899319168311,
+            "mean_test_confidence": 0.8865253306793741
+          }
+        ],
+        "note": "Strict grouped cross-validation holds out full sessions/groups."
+      },
+      "controlled_random_best": {
+        "mode": "driver_behavior_binary_controlled_random",
+        "model_name": "random_forest",
+        "android_exportable": true,
+        "accuracy": 0.9260969976905312,
+        "macro_f1": 0.9212906157691434,
+        "labels": [
+          "AGGRESSIVE",
+          "NORMAL"
+        ],
+        "confusion_matrix": [
+          [
+            147,
+            12
+          ],
+          [
+            20,
+            254
+          ]
+        ],
+        "classification_report": {
+          "AGGRESSIVE": {
+            "precision": 0.8802395209580839,
+            "recall": 0.9245283018867925,
+            "f1-score": 0.901840490797546,
+            "support": 159.0
+          },
+          "NORMAL": {
+            "precision": 0.9548872180451128,
+            "recall": 0.927007299270073,
+            "f1-score": 0.9407407407407408,
+            "support": 274.0
+          },
+          "accuracy": 0.9260969976905312,
+          "macro avg": {
+            "precision": 0.9175633695015983,
+            "recall": 0.9257678005784327,
+            "f1-score": 0.9212906157691434,
+            "support": 433.0
+          },
+          "weighted avg": {
+            "precision": 0.927476169923086,
+            "recall": 0.9260969976905312,
+            "f1-score": 0.9264563533482051,
+            "support": 433.0
+          }
+        },
+        "split": {
+          "method": "Stratified random row split",
+          "note": "Controlled random split is for dataset/demo comparison only and can be optimistic.",
+          "unique_groups": 1,
+          "train_rows": 1731,
+          "test_rows": 433,
+          "train_groups": 1,
+          "test_groups": 1,
+          "train_label_counts": {
+            "NORMAL": 1097,
+            "AGGRESSIVE": 634
+          },
+          "test_label_counts": {
+            "NORMAL": 274,
+            "AGGRESSIVE": 159
+          }
+        },
+        "mean_test_confidence": 0.8580188659632111
+      },
+      "controlled_random_repeated": {
+        "mode": "driver_behavior_binary_controlled_random_repeated",
+        "method": "Repeated stratified random row split(n_repeats=5)",
+        "fold_count": 5,
+        "labels": [
+          "AGGRESSIVE",
+          "NORMAL"
+        ],
+        "unique_groups": 1,
+        "summary_by_model": [
+          {
+            "model_name": "random_forest",
+            "android_exportable": true,
+            "folds": 5,
+            "accuracy_mean": 0.915473441108545,
+            "accuracy_std": 0.0164345929558034,
+            "macro_f1_mean": 0.9091614521756306,
+            "macro_f1_std": 0.017463549151772475,
+            "mean_test_confidence": 0.865279894570213
+          },
+          {
+            "model_name": "extra_trees",
+            "android_exportable": true,
+            "folds": 5,
+            "accuracy_mean": 0.9071593533487299,
+            "accuracy_std": 0.01826671587370456,
+            "macro_f1_mean": 0.9017183876350924,
+            "macro_f1_std": 0.018695656348901652,
+            "mean_test_confidence": 0.8315525417829825
+          },
+          {
+            "model_name": "gradient_boosting",
+            "android_exportable": false,
+            "folds": 5,
+            "accuracy_mean": 0.897459584295612,
+            "accuracy_std": 0.008339709046313057,
+            "macro_f1_mean": 0.8908971867697847,
+            "macro_f1_std": 0.008841914387808613,
+            "mean_test_confidence": 0.8697698987622914
+          },
+          {
+            "model_name": "logistic_regression",
+            "android_exportable": true,
+            "folds": 5,
+            "accuracy_mean": 0.8369515011547344,
+            "accuracy_std": 0.01756411394164579,
+            "macro_f1_mean": 0.8255313235120889,
+            "macro_f1_std": 0.017231921782114405,
+            "mean_test_confidence": 0.8149263057935224
+          }
+        ],
+        "note": "Controlled random repeated validation is for dataset/demo comparison only and can be optimistic."
+      }
+    },
+    "window_seconds": 3.0,
+    "stride_seconds": 1.0,
+    "sample_rate_hz": 50.0
+  },
+  "model_type": "logistic_regression",
+  "scaler": {
+    "mean": [
+      1.4963304353980356,
+      0.8402154126900492,
+      0.16361832201174237,
+      5.123134714559727,
+      1.7236438313105407,
+      1.3280622033551241,
+      1.9173895024887433,
+      2.593793872967346,
+      3.0862475758280477,
+      3.510245255324242,
+      42.46580406654344,
+      1.4963304353980356,
+      60.49909214788642,
+      52.1390111115423,
+      0.27246161965529647,
+      305.5285702946182,
+      80.21426664873248,
+      128.267729172457,
+      159.1917501289257,
+      8060.078389677968,
+      231.18853974121996,
+      0.1387662270605318,
+      0.08689248376604379,
+      0.015956956417822472,
+      0.4930491183369692,
+      0.1666944338800282,
+      0.25249166888042773,
+      0.3069580341724027,
+      0.11818362121022805,
+      4.523105360443623,
+      0.1387662270605318,
+      1.6350966624585674,
+      0.8744038559457599,
+      5.372140209285728,
+      1.8628881510737598,
+      4.276882542155349
+    ],
+    "scale": [
+      0.6108022432327872,
+      0.43840525015749143,
+      0.10174425863888903,
+      3.3976337726058103,
+      0.7343685710250422,
+      0.5468126213925326,
+      0.7736812121803087,
+      1.0900704244844797,
+      1.3960808584243793,
+      3.6596267593131175,
+      42.683162285061805,
+      0.6108022432327872,
+      27.948486022124012,
+      30.005730924960393,
+      0.32055909147684514,
+      252.32472357053751,
+      40.320587987825924,
+      59.73585270897836,
+      77.9854247102078,
+      9224.514948721104,
+      43.17619125841215,
+      0.22175958745434954,
+      0.20542623268379698,
+      0.0197211081422171,
+      1.1247832782480112,
+      0.3006602516523343,
+      0.4919045576892568,
+      0.6320547815864715,
+      0.7943502623192826,
+      25.877946890616286,
+      0.22175958745434954,
+      0.7509976259575285,
+      0.5241773641483822,
+      3.7898823393182757,
+      0.8980703083524907,
+      6.22552140585174
+    ]
+  },
+  "coefficients": [
+    [
+      -0.729194590998214,
+      1.2241287256531084,
+      -0.09695033287264263,
+      -0.450349362058725,
+      -1.4603672345464993,
+      -1.2210044654048182,
+      1.9116621838862708,
+      0.2003459935291761,
+      2.409939663793079,
+      -2.052575488196886,
+      1.4810472150957674,
+      -0.729194590998214,
+      0.05652410914667112,
+      -0.336509470208473,
+      -0.14760508990553248,
+      -0.7354147067656674,
+      -0.9208448668529959,
+      -0.24497072089698552,
+      -0.7597833304937108,
+      2.755270145516131,
+      -0.3090610079703982,
+      -0.6342638970250024,
+      0.12495169615805142,
+      0.04508398273468549,
+      -0.3133280885768565,
+      -0.4890248674108536,
+      1.255959746198306,
+      -3.2761632290898914,
+      1.888207605901425,
+      1.435340928527494,
+      -0.6342638970250024,
+      -0.780359047512541,
+      0.9204625663139393,
+      0.9556323078176867,
+      -1.2960530980107474,
+      -1.6442276434535115
+    ]
+  ],
+  "intercepts": [
+    0.13524055277973873
+  ]
+}

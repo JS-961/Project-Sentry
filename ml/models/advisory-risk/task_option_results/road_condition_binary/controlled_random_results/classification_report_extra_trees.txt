@@ -1,0 +1,8 @@
+              precision    recall  f1-score   support
+
+ NORMAL_ROAD       0.90      0.92      0.91       433
+ROAD_ANOMALY       0.82      0.77      0.79       198
+
+    accuracy                           0.87       631
+   macro avg       0.86      0.85      0.85       631
+weighted avg       0.87      0.87      0.87       631

@@ -1,0 +1,266 @@
+[
+  {
+    "mode": "driver_behavior_binary_strict_grouped",
+    "model_name": "logistic_regression",
+    "android_exportable": true,
+    "accuracy": 0.6619047619047619,
+    "macro_f1": 0.47638279192273925,
+    "labels": [
+      "AGGRESSIVE",
+      "NORMAL"
+    ],
+    "confusion_matrix": [
+      [
+        35,
+        338
+      ],
+      [
+        17,
+        660
+      ]
+    ],
+    "classification_report": {
+      "AGGRESSIVE": {
+        "precision": 0.6730769230769231,
+        "recall": 0.0938337801608579,
+        "f1-score": 0.16470588235294117,
+        "support": 373.0
+      },
+      "NORMAL": {
+        "precision": 0.6613226452905812,
+        "recall": 0.9748892171344166,
+        "f1-score": 0.7880597014925373,
+        "support": 677.0
+      },
+      "accuracy": 0.6619047619047619,
+      "macro avg": {
+        "precision": 0.6671997841837521,
+        "recall": 0.5343614986476373,
+        "f1-score": 0.47638279192273925,
+        "support": 1050.0
+      },
+      "weighted avg": {
+        "precision": 0.6654982125423008,
+        "recall": 0.6619047619047619,
+        "f1-score": 0.566620678121995,
+        "support": 1050.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=2)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 6,
+      "train_rows": 1114,
+      "test_rows": 1050,
+      "train_groups": 3,
+      "test_groups": 3,
+      "train_label_counts": {
+        "NORMAL": 694,
+        "AGGRESSIVE": 420
+      },
+      "test_label_counts": {
+        "NORMAL": 677,
+        "AGGRESSIVE": 373
+      }
+    },
+    "mean_test_confidence": 0.9507124883735335
+  },
+  {
+    "mode": "driver_behavior_binary_strict_grouped",
+    "model_name": "gradient_boosting",
+    "android_exportable": false,
+    "accuracy": 0.64,
+    "macro_f1": 0.41854332577395703,
+    "labels": [
+      "AGGRESSIVE",
+      "NORMAL"
+    ],
+    "confusion_matrix": [
+      [
+        12,
+        361
+      ],
+      [
+        17,
+        660
+      ]
+    ],
+    "classification_report": {
+      "AGGRESSIVE": {
+        "precision": 0.41379310344827586,
+        "recall": 0.032171581769437,
+        "f1-score": 0.05970149253731343,
+        "support": 373.0
+      },
+      "NORMAL": {
+        "precision": 0.6464250734573947,
+        "recall": 0.9748892171344166,
+        "f1-score": 0.7773851590106007,
+        "support": 677.0
+      },
+      "accuracy": 0.64,
+      "macro avg": {
+        "precision": 0.5301090884528353,
+        "recall": 0.5035303994519268,
+        "f1-score": 0.41854332577395703,
+        "support": 1050.0
+      },
+      "weighted avg": {
+        "precision": 0.5637853355398696,
+        "recall": 0.64,
+        "f1-score": 0.5224365803491376,
+        "support": 1050.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=2)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 6,
+      "train_rows": 1114,
+      "test_rows": 1050,
+      "train_groups": 3,
+      "test_groups": 3,
+      "train_label_counts": {
+        "NORMAL": 694,
+        "AGGRESSIVE": 420
+      },
+      "test_label_counts": {
+        "NORMAL": 677,
+        "AGGRESSIVE": 373
+      }
+    },
+    "mean_test_confidence": 0.9888453333946159
+  },
+  {
+    "mode": "driver_behavior_binary_strict_grouped",
+    "model_name": "extra_trees",
+    "android_exportable": true,
+    "accuracy": 0.6390476190476191,
+    "macro_f1": 0.4181090261459794,
+    "labels": [
+      "AGGRESSIVE",
+      "NORMAL"
+    ],
+    "confusion_matrix": [
+      [
+        12,
+        361
+      ],
+      [
+        18,
+        659
+      ]
+    ],
+    "classification_report": {
+      "AGGRESSIVE": {
+        "precision": 0.4,
+        "recall": 0.032171581769437,
+        "f1-score": 0.05955334987593052,
+        "support": 373.0
+      },
+      "NORMAL": {
+        "precision": 0.6460784313725491,
+        "recall": 0.9734121122599705,
+        "f1-score": 0.7766647024160283,
+        "support": 677.0
+      },
+      "accuracy": 0.6390476190476191,
+      "macro avg": {
+        "precision": 0.5230392156862745,
+        "recall": 0.5027918470147037,
+        "f1-score": 0.4181090261459794,
+        "support": 1050.0
+      },
+      "weighted avg": {
+        "precision": 0.5586619981325864,
+        "recall": 0.6390476190476191,
+        "f1-score": 0.5219194314660697,
+        "support": 1050.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=2)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 6,
+      "train_rows": 1114,
+      "test_rows": 1050,
+      "train_groups": 3,
+      "test_groups": 3,
+      "train_label_counts": {
+        "NORMAL": 694,
+        "AGGRESSIVE": 420
+      },
+      "test_label_counts": {
+        "NORMAL": 677,
+        "AGGRESSIVE": 373
+      }
+    },
+    "mean_test_confidence": 0.949469345921849
+  },
+  {
+    "mode": "driver_behavior_binary_strict_grouped",
+    "model_name": "random_forest",
+    "android_exportable": true,
+    "accuracy": 0.6390476190476191,
+    "macro_f1": 0.4158952236829938,
+    "labels": [
+      "AGGRESSIVE",
+      "NORMAL"
+    ],
+    "confusion_matrix": [
+      [
+        11,
+        362
+      ],
+      [
+        17,
+        660
+      ]
+    ],
+    "classification_report": {
+      "AGGRESSIVE": {
+        "precision": 0.39285714285714285,
+        "recall": 0.029490616621983913,
+        "f1-score": 0.05486284289276808,
+        "support": 373.0
+      },
+      "NORMAL": {
+        "precision": 0.6457925636007827,
+        "recall": 0.9748892171344166,
+        "f1-score": 0.7769276044732195,
+        "support": 677.0
+      },
+      "accuracy": 0.6390476190476191,
+      "macro avg": {
+        "precision": 0.5193248532289628,
+        "recall": 0.5021899168782002,
+        "f1-score": 0.4158952236829938,
+        "support": 1050.0
+      },
+      "weighted avg": {
+        "precision": 0.5559402665175659,
+        "recall": 0.6390476190476191,
+        "f1-score": 0.5204226939308306,
+        "support": 1050.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=2)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 6,
+      "train_rows": 1114,
+      "test_rows": 1050,
+      "train_groups": 3,
+      "test_groups": 3,
+      "train_label_counts": {
+        "NORMAL": 694,
+        "AGGRESSIVE": 420
+      },
+      "test_label_counts": {
+        "NORMAL": 677,
+        "AGGRESSIVE": 373
+      }
+    },
+    "mean_test_confidence": 0.9781199307116991
+  }
+]

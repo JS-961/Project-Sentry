@@ -1,0 +1,53 @@
+{
+  "mode": "road_condition_binary_controlled_random_repeated",
+  "method": "Repeated stratified random row split(n_repeats=5)",
+  "fold_count": 5,
+  "labels": [
+    "NORMAL_ROAD",
+    "ROAD_ANOMALY"
+  ],
+  "unique_groups": 1,
+  "summary_by_model": [
+    {
+      "model_name": "random_forest",
+      "android_exportable": true,
+      "folds": 5,
+      "accuracy_mean": 0.8931854199683043,
+      "accuracy_std": 0.0038298085494752757,
+      "macro_f1_mean": 0.8717227096143129,
+      "macro_f1_std": 0.004844398656532769,
+      "mean_test_confidence": 0.8452836796515436
+    },
+    {
+      "model_name": "gradient_boosting",
+      "android_exportable": false,
+      "folds": 5,
+      "accuracy_mean": 0.8770206022187004,
+      "accuracy_std": 0.004549191789035583,
+      "macro_f1_mean": 0.8560173144839329,
+      "macro_f1_std": 0.004726303571529524,
+      "mean_test_confidence": 0.8269200124785666
+    },
+    {
+      "model_name": "extra_trees",
+      "android_exportable": true,
+      "folds": 5,
+      "accuracy_mean": 0.87797147385103,
+      "accuracy_std": 0.0040092268274717876,
+      "macro_f1_mean": 0.855994773659804,
+      "macro_f1_std": 0.0032755643082108946,
+      "mean_test_confidence": 0.7644041533106251
+    },
+    {
+      "model_name": "logistic_regression",
+      "android_exportable": true,
+      "folds": 5,
+      "accuracy_mean": 0.7572107765451663,
+      "accuracy_std": 0.0167238110405996,
+      "macro_f1_mean": 0.7317368986521728,
+      "macro_f1_std": 0.018475251292361227,
+      "mean_test_confidence": 0.7404851856486148
+    }
+  ],
+  "note": "Controlled random repeated validation is for dataset/demo comparison only and can be optimistic."
+}

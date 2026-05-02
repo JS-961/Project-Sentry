@@ -165,7 +165,7 @@ private fun CrashCountdownScreen(
                 CountdownProgress(progress)
 
                 Text(
-                    "If there is no response, Project Sentry will send SMS alerts, open the call flow, and play the TTS intro.",
+                    "If there is no response, Sentry will send SMS alerts, open the call flow, and play the TTS intro.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color(0xFF374151),
                     textAlign = TextAlign.Center,

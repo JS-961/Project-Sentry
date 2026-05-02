@@ -55,6 +55,22 @@ object DrivingStateStore {
         }
     }
 
+    fun updateMlRisk(
+        riskScore: Int,
+        label: String,
+        confidence: Float,
+        source: String,
+    ) {
+        _state.update {
+            it.copy(
+                mlRiskScore = riskScore.coerceIn(0, 100),
+                mlRiskLabel = label,
+                mlRiskConfidence = confidence.coerceIn(0f, 1f),
+                mlModelSource = source,
+            )
+        }
+    }
+
     fun setSensorHeartbeat(timestampMs: Long = System.currentTimeMillis()) {
         _state.update { it.copy(lastSensorEpochMs = timestampMs) }
     }

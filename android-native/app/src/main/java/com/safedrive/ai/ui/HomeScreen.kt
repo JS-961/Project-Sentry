@@ -1,5 +1,7 @@
 package com.safedrive.ai.ui
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -28,11 +30,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,8 +49,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.safedrive.ai.R
 import com.safedrive.ai.data.AppSettings
 import com.safedrive.ai.data.DrivingUiState
 import com.safedrive.ai.data.PermissionStatus
@@ -88,13 +94,23 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text("Project Sentry")
-                        Text(
-                            selectedTab.subtitle,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.sentry_logo_white),
+                            contentDescription = "Sentry logo",
+                            modifier = Modifier.size(34.dp),
                         )
+                        Column {
+                            Text("Sentry", fontWeight = FontWeight.ExtraBold)
+                            Text(
+                                selectedTab.subtitle,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 },
                 actions = {
@@ -105,13 +121,34 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+            NavigationBar(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(24.dp)),
+                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
+                tonalElevation = 8.dp,
+            ) {
                 SentryTab.entries.forEach { tab ->
                     NavigationBarItem(
                         selected = selectedTab == tab,
                         onClick = { selectedTab = tab },
-                        icon = { Text(tab.iconLabel, fontWeight = FontWeight.ExtraBold) },
-                        label = { Text(tab.label) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(tab.iconRes),
+                                contentDescription = tab.label,
+                                modifier = Modifier.size(22.dp),
+                            )
+                        },
+                        label = {
+                            Text(tab.label, fontWeight = if (selectedTab == tab) FontWeight.Bold else FontWeight.Medium)
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.72f),
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
                     )
                 }
             }
@@ -213,6 +250,10 @@ private fun DriveTab(
             RiskCard(
                 riskScore = state.riskScore,
                 severity = severity,
+                mlRiskScore = state.mlRiskScore,
+                mlRiskLabel = state.mlRiskLabel,
+                mlRiskConfidence = state.mlRiskConfidence,
+                mlModelSource = state.mlModelSource,
                 speedKmh = state.latestSpeedKmh,
                 latestEvent = state.latestEventLabel,
                 recentEvents = recentEvents,
@@ -333,7 +374,7 @@ private fun StatusTab(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
-            SentryCard(title = "Preflight Checklist", subtitle = "Everything graders should see before the demo starts.") {
+            SentryCard(title = "Preflight Checklist", subtitle = "Everything to confirm before Sentry starts.") {
                 ChecklistRow("Location permission", permissionStatus.location, "Required for foreground monitoring")
                 ChecklistRow("Notifications", permissionStatus.notifications, "Required for crash alerts outside the app")
                 ChecklistRow("SMS permission + contact", permissionStatus.sms && contactsReady, "Needed for emergency message")
@@ -349,6 +390,9 @@ private fun StatusTab(
                 StatusRow("Driving mode", if (state.isDriving) "Active" else "Idle", state.isDriving)
                 StatusRow("Crash countdown", if (state.crashCountdownActive) "Active" else "Inactive", !state.crashCountdownActive)
                 StatusRow("Latest event", state.latestEventLabel, true)
+                StatusRow("ML Advisory", mlModelLabel(state.mlModelSource), state.mlModelSource.startsWith("trained-json"))
+                StatusRow("ML result", "${displayMlLabel(state.mlRiskLabel)} ${state.mlRiskScore}/100", true)
+                StatusRow("ML confidence", "${(state.mlRiskConfidence * 100).toInt()}%", state.mlRiskConfidence >= 0.45f)
                 StatusRow("Last alert", state.lastAlertOutcome ?: "None yet", true)
             }
         }
@@ -364,7 +408,7 @@ private fun StatusTab(
         }
 
         item {
-            SentryCard(title = "Capstone Demo Script", subtitle = "Fast path if graders ask what to watch.") {
+            SentryCard(title = "Test Checklist", subtitle = "Fast path before a live walkthrough.") {
                 ScriptStep("1", "Open Status and show permissions/config readiness.")
                 ScriptStep("2", "Start Drive and point out GPS/sensor status.")
                 ScriptStep("3", "Use Simulate Crash to show countdown and escalation path.")
@@ -479,11 +523,16 @@ private fun DriveStatusCard(
 private fun RiskCard(
     riskScore: Int,
     severity: RiskSeverity,
+    mlRiskScore: Int,
+    mlRiskLabel: String,
+    mlRiskConfidence: Float,
+    mlModelSource: String,
     speedKmh: Float,
     latestEvent: String,
     recentEvents: List<RiskEventEntity>,
 ) {
-    SentryCard(title = "Live Risk", subtitle = "Score is weighted by harsh braking, acceleration, cornering, and speed.") {
+    val mlSeverity = RiskSeverity.from(mlRiskScore)
+    SentryCard(title = "Live Risk", subtitle = "Rule score drives crash flow; ML advisory stays separate.") {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -511,6 +560,29 @@ private fun RiskCard(
 
         Spacer(modifier = Modifier.height(14.dp))
         RiskProgressBar(riskScore, severity.color)
+        Spacer(modifier = Modifier.height(14.dp))
+
+        Text("ML advisory", style = MaterialTheme.typography.labelLarge)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column {
+                Text(
+                    "$mlRiskScore/100",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = mlSeverity.color,
+                    fontWeight = FontWeight.ExtraBold,
+                )
+                Text(displayMlLabel(mlRiskLabel), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text("${(mlRiskConfidence * 100).toInt()}%", fontWeight = FontWeight.Bold)
+                Text(mlModelLabel(mlModelSource), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        RiskProgressBar(mlRiskScore, mlSeverity.color)
         Spacer(modifier = Modifier.height(14.dp))
 
         Text("Latest event", style = MaterialTheme.typography.labelLarge)
@@ -560,7 +632,7 @@ private fun EventCounterCard(state: DrivingUiState) {
 
 @Composable
 private fun LastAlertCard(lastAlertOutcome: String?) {
-    SentryCard(title = "Last Alert Result", subtitle = "Visible outcome helps the demo audience understand the flow.") {
+    SentryCard(title = "Last Alert Result", subtitle = "Visible outcome helps the safety flow stay clear.") {
         Text(
             lastAlertOutcome ?: "No crash alerts resolved yet.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -576,8 +648,8 @@ private fun CrashDemoCard(
     onSimulateCrash: () -> Unit,
 ) {
     val ready = contactsReady && callReady && permissionStatus.crashFlowReady
-    SentryCard(title = "Crash Flow Demo", subtitle = "Manual trigger for graders; real detector remains sensor-driven.") {
-        ChecklistRow("Emergency flow ready", ready, if (ready) "SMS, call, TTS, and alert notification are configured" else "Open Settings before the final demo")
+    SentryCard(title = "Crash Flow Test", subtitle = "Manual trigger for testing; real detector remains sensor-driven.") {
+        ChecklistRow("Emergency flow ready", ready, if (ready) "SMS, call, TTS, and alert notification are configured" else "Open Settings before the final test")
         Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = onSimulateCrash,
@@ -867,11 +939,11 @@ private fun EmptyState(message: String) {
 private enum class SentryTab(
     val label: String,
     val subtitle: String,
-    val iconLabel: String,
+    @DrawableRes val iconRes: Int,
 ) {
-    Drive("Drive", "Live monitoring", "D"),
-    History("History", "Trips and alerts", "H"),
-    Status("Status", "Setup and demo checks", "S"),
+    Drive("Drive", "Live monitoring", R.drawable.ic_sentry_drive),
+    History("History", "Trips and alerts", R.drawable.ic_sentry_history),
+    Status("Status", "Setup checks", R.drawable.ic_sentry_status),
 }
 
 private data class DriveStatus(
@@ -890,7 +962,7 @@ private fun driveStatusLabel(
         state.crashCountdownActive -> DriveStatus("Crash suspected", "Countdown is active. Awaiting driver response.", Color(0xFFF97316))
         state.isDriving -> DriveStatus("Monitoring", "Sensors and GPS are watching the current trip.", Color(0xFF22C55E))
         !permissionStatus.location -> DriveStatus("Setup needed", "Location permission is required before monitoring.", Color(0xFFEF4444))
-        !contactsReady || !callReady || !permissionStatus.crashFlowReady -> DriveStatus("Almost ready", "Finish contacts and crash permissions before the final demo.", Color(0xFFFBBF24))
+        !contactsReady || !callReady || !permissionStatus.crashFlowReady -> DriveStatus("Almost ready", "Finish contacts and crash permissions before the final test.", Color(0xFFFBBF24))
         else -> DriveStatus("Ready", "Preflight checks look good. Start driving mode when ready.", Color(0xFF38BDF8))
     }
 }
@@ -936,4 +1008,16 @@ private fun formatDuration(durationMs: Long): String {
     val minutes = totalSeconds / 60L
     val seconds = totalSeconds % 60L
     return "%02d:%02d".format(minutes, seconds)
+}
+
+private fun mlModelLabel(source: String): String {
+    return when {
+        source.contains("demo-assist") -> "Assist"
+        source == "trained-json" -> "Trained Model"
+        else -> "Baseline"
+    }
+}
+
+private fun displayMlLabel(label: String): String {
+    return label.replace("_", " ")
 }

@@ -1,0 +1,266 @@
+[
+  {
+    "mode": "road_condition_binary_strict_grouped",
+    "model_name": "gradient_boosting",
+    "android_exportable": false,
+    "accuracy": 0.3440514469453376,
+    "macro_f1": 0.337468671679198,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        138,
+        381
+      ],
+      [
+        27,
+        76
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.8363636363636363,
+        "recall": 0.2658959537572254,
+        "f1-score": 0.40350877192982454,
+        "support": 519.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.16630196936542668,
+        "recall": 0.7378640776699029,
+        "f1-score": 0.2714285714285714,
+        "support": 103.0
+      },
+      "accuracy": 0.3440514469453376,
+      "macro avg": {
+        "precision": 0.5013328028645315,
+        "recall": 0.5018800157135641,
+        "f1-score": 0.337468671679198,
+        "support": 622.0
+      },
+      "weighted avg": {
+        "precision": 0.7254048715713284,
+        "recall": 0.3440514469453376,
+        "f1-score": 0.38163697023910254,
+        "support": 622.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=5)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 23,
+      "train_rows": 2531,
+      "test_rows": 622,
+      "train_groups": 15,
+      "test_groups": 8,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1645,
+        "ROAD_ANOMALY": 886
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 519,
+        "ROAD_ANOMALY": 103
+      }
+    },
+    "mean_test_confidence": 0.7769306484964752
+  },
+  {
+    "mode": "road_condition_binary_strict_grouped",
+    "model_name": "random_forest",
+    "android_exportable": true,
+    "accuracy": 0.32636655948553056,
+    "macro_f1": 0.31747341184727756,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        137,
+        382
+      ],
+      [
+        37,
+        66
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.7873563218390804,
+        "recall": 0.26396917148362237,
+        "f1-score": 0.3953823953823954,
+        "support": 519.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.14732142857142858,
+        "recall": 0.6407766990291263,
+        "f1-score": 0.2395644283121597,
+        "support": 103.0
+      },
+      "accuracy": 0.32636655948553056,
+      "macro avg": {
+        "precision": 0.4673388752052545,
+        "recall": 0.45237293525637434,
+        "f1-score": 0.31747341184727756,
+        "support": 622.0
+      },
+      "weighted avg": {
+        "precision": 0.6813698362979741,
+        "recall": 0.32636655948553056,
+        "f1-score": 0.36957974167140784,
+        "support": 622.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=5)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 23,
+      "train_rows": 2531,
+      "test_rows": 622,
+      "train_groups": 15,
+      "test_groups": 8,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1645,
+        "ROAD_ANOMALY": 886
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 519,
+        "ROAD_ANOMALY": 103
+      }
+    },
+    "mean_test_confidence": 0.775784748368256
+  },
+  {
+    "mode": "road_condition_binary_strict_grouped",
+    "model_name": "logistic_regression",
+    "android_exportable": true,
+    "accuracy": 0.3167202572347267,
+    "macro_f1": 0.3124533464418453,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        123,
+        396
+      ],
+      [
+        29,
+        74
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.8092105263157895,
+        "recall": 0.23699421965317918,
+        "f1-score": 0.36661698956780925,
+        "support": 519.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.1574468085106383,
+        "recall": 0.7184466019417476,
+        "f1-score": 0.2582897033158813,
+        "support": 103.0
+      },
+      "accuracy": 0.3167202572347267,
+      "macro avg": {
+        "precision": 0.4833286674132139,
+        "recall": 0.4777204107974634,
+        "f1-score": 0.3124533464418453,
+        "support": 622.0
+      },
+      "weighted avg": {
+        "precision": 0.7012818077724927,
+        "recall": 0.3167202572347267,
+        "f1-score": 0.34867854827528744,
+        "support": 622.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=5)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 23,
+      "train_rows": 2531,
+      "test_rows": 622,
+      "train_groups": 15,
+      "test_groups": 8,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1645,
+        "ROAD_ANOMALY": 886
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 519,
+        "ROAD_ANOMALY": 103
+      }
+    },
+    "mean_test_confidence": 0.638214397917076
+  },
+  {
+    "mode": "road_condition_binary_strict_grouped",
+    "model_name": "extra_trees",
+    "android_exportable": true,
+    "accuracy": 0.2765273311897106,
+    "macro_f1": 0.2756211180124224,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        97,
+        422
+      ],
+      [
+        28,
+        75
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.776,
+        "recall": 0.18689788053949905,
+        "f1-score": 0.30124223602484473,
+        "support": 519.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.15090543259557343,
+        "recall": 0.7281553398058253,
+        "f1-score": 0.25,
+        "support": 103.0
+      },
+      "accuracy": 0.2765273311897106,
+      "macro avg": {
+        "precision": 0.4634527162977867,
+        "recall": 0.45752661017266216,
+        "f1-score": 0.2756211180124224,
+        "support": 622.0
+      },
+      "weighted avg": {
+        "precision": 0.672487555558431,
+        "recall": 0.2765273311897106,
+        "f1-score": 0.292756785364782,
+        "support": 622.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=5)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 23,
+      "train_rows": 2531,
+      "test_rows": 622,
+      "train_groups": 15,
+      "test_groups": 8,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1645,
+        "ROAD_ANOMALY": 886
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 519,
+        "ROAD_ANOMALY": 103
+      }
+    },
+    "mean_test_confidence": 0.7452148388201577
+  }
+]

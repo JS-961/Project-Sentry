@@ -53,6 +53,6 @@ class SettingsRepository(context: Context) {
         private const val KEY_CONTACTS = "contacts"
         private const val KEY_DEMO_NUMBER = "demo_number"
         private const val KEY_TTS = "tts_template"
-        private const val DEFAULT_TTS = "This is a Project Sentry demo alert. Potential crash detected. Please respond."
+        private const val DEFAULT_TTS = "This is a Sentry alert. Potential crash detected. Please respond."
     }
 }

@@ -13,6 +13,10 @@ data class RiskCounters(
 data class DrivingUiState(
     val isDriving: Boolean = false,
     val riskScore: Int = 0,
+    val mlRiskScore: Int = 0,
+    val mlRiskLabel: String = "Collecting",
+    val mlRiskConfidence: Float = 0f,
+    val mlModelSource: String = "baseline",
     val latestSpeedKmh: Float = 0f,
     val latestEventLabel: String = "No events yet",
     val counters: RiskCounters = RiskCounters(),

@@ -1,0 +1,54 @@
+{
+  "mode": "strict_grouped_cv",
+  "method": "StratifiedGroupKFold(n_splits=2)",
+  "fold_count": 2,
+  "labels": [
+    "AGGRESSIVE",
+    "NORMAL",
+    "ROAD_ANOMALY"
+  ],
+  "unique_groups": 23,
+  "summary_by_model": [
+    {
+      "model_name": "logistic_regression",
+      "android_exportable": true,
+      "folds": 2,
+      "accuracy_mean": 0.3257288986497583,
+      "accuracy_std": 0.09266488373366136,
+      "macro_f1_mean": 0.2745602976891339,
+      "macro_f1_std": 0.062797927662347,
+      "mean_test_confidence": 0.7981346311256343
+    },
+    {
+      "model_name": "extra_trees",
+      "android_exportable": true,
+      "folds": 2,
+      "accuracy_mean": 0.27383693408514925,
+      "accuracy_std": 0.03704389493039477,
+      "macro_f1_mean": 0.22541122179085282,
+      "macro_f1_std": 0.016281830597037264,
+      "mean_test_confidence": 0.7221538460311403
+    },
+    {
+      "model_name": "gradient_boosting",
+      "android_exportable": false,
+      "folds": 2,
+      "accuracy_mean": 0.24700096123811333,
+      "accuracy_std": 0.08913893513494364,
+      "macro_f1_mean": 0.1932829211268213,
+      "macro_f1_std": 0.04102737471931961,
+      "mean_test_confidence": 0.797661041328865
+    },
+    {
+      "model_name": "random_forest",
+      "android_exportable": true,
+      "folds": 2,
+      "accuracy_mean": 0.2383588751098903,
+      "accuracy_std": 0.06993128033052422,
+      "macro_f1_mean": 0.18634822613203678,
+      "macro_f1_std": 0.023776302775799715,
+      "mean_test_confidence": 0.7223111719887629
+    }
+  ],
+  "note": "Strict grouped cross-validation holds out full sessions/groups."
+}

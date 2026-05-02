@@ -15,6 +15,21 @@ Place driving datasets here for local ML experimentation.
 - Speed estimates and optional heading.
 - Event labels (harsh brake/accel/cornering/speeding; optional crash-like labels).
 
+For Android-native advisory training, use only labels that are explicit in the
+dataset folder names, metadata, or CSV columns. Do not infer abbreviations such
+as `R`, `S`, or `E` unless source documentation proves the meaning.
+
+Supported labels:
+
+- `NORMAL`
+- `AGGRESSIVE`
+- `RISKY`
+- `ROAD_ANOMALY`
+
+The training code can infer labels from parent folder names such as
+`normal/`, `aggressive/`, `risky/`, `bump/`, and `pothole/`, or from a CSV
+column named `label`, `class`, `behavior`, or `behaviour`.
+
 ## Suggested Structure
 
 ```text

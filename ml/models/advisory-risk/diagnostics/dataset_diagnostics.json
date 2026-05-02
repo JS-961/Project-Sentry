@@ -1,0 +1,200 @@
+{
+  "source_recordings_per_class": {
+    "AGGRESSIVE": 2,
+    "NORMAL": 4,
+    "ROAD_ANOMALY": 17
+  },
+  "sessions_or_groups_per_class": {
+    "AGGRESSIVE": 2,
+    "NORMAL": 4,
+    "ROAD_ANOMALY": 17
+  },
+  "windows_per_class": {
+    "NORMAL": 1371,
+    "ROAD_ANOMALY": 989,
+    "AGGRESSIVE": 793
+  },
+  "average_window_count_per_recording": {
+    "AGGRESSIVE": 396.5,
+    "NORMAL": 342.75,
+    "ROAD_ANOMALY": 58.1764705882353
+  },
+  "min_window_count_per_recording": {
+    "AGGRESSIVE": 373,
+    "NORMAL": 158,
+    "ROAD_ANOMALY": 2
+  },
+  "max_window_count_per_recording": {
+    "AGGRESSIVE": 420,
+    "NORMAL": 519,
+    "ROAD_ANOMALY": 362
+  },
+  "recording_count": 23,
+  "group_count": 23,
+  "window_rows": 3153,
+  "feature_count": 36,
+  "skipped_recordings": [
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-1R",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-1S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-2S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-3R",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-3S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-4R",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-4S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-5S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-6S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Day-7S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-1R",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-1S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-2S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-3E",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-3R",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-3S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-4E1",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-4E2",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-4E3",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-4R",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-4S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-5S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-6S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Daywise data\\Day-7S",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Driver-1",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Driver-2",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Driver-3",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Driver-4",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Driver-5",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Driver-6",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    },
+    {
+      "source": "MENDELEY",
+      "path": "C:\\Users\\Admin\\Desktop\\LAU\\Spring 2026\\Capstone\\Project-Sentry\\ml\\data\\raw\\mendeley\\extracted\\Driver-7",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels"
+    }
+  ],
+  "skipped_by_source_reason": [
+    {
+      "source": "MENDELEY",
+      "reason": "skipped: downloaded files do not provide a verified folder-to-label mapping; Data in Brief describes Day-*S/*R as trip timing folders, not class labels",
+      "count": 31
+    }
+  ]
+}

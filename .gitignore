@@ -32,3 +32,8 @@ ml/env/
 # Generated reports and local data
 reports/
 sensor_traces/
+9vr83n7z5j-2.zip
+Road Data.zip
+ml/data/raw/
+ml/models/**/*.joblib
+ml/models/**/feature_windows.csv

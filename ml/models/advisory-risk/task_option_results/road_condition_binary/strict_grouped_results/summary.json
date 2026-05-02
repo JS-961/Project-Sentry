@@ -1,0 +1,86 @@
+{
+  "mode": "road_condition_binary_strict_grouped",
+  "best_model": {
+    "mode": "road_condition_binary_strict_grouped",
+    "model_name": "gradient_boosting",
+    "android_exportable": false,
+    "accuracy": 0.3440514469453376,
+    "macro_f1": 0.337468671679198,
+    "labels": [
+      "NORMAL_ROAD",
+      "ROAD_ANOMALY"
+    ],
+    "confusion_matrix": [
+      [
+        138,
+        381
+      ],
+      [
+        27,
+        76
+      ]
+    ],
+    "classification_report": {
+      "NORMAL_ROAD": {
+        "precision": 0.8363636363636363,
+        "recall": 0.2658959537572254,
+        "f1-score": 0.40350877192982454,
+        "support": 519.0
+      },
+      "ROAD_ANOMALY": {
+        "precision": 0.16630196936542668,
+        "recall": 0.7378640776699029,
+        "f1-score": 0.2714285714285714,
+        "support": 103.0
+      },
+      "accuracy": 0.3440514469453376,
+      "macro avg": {
+        "precision": 0.5013328028645315,
+        "recall": 0.5018800157135641,
+        "f1-score": 0.337468671679198,
+        "support": 622.0
+      },
+      "weighted avg": {
+        "precision": 0.7254048715713284,
+        "recall": 0.3440514469453376,
+        "f1-score": 0.38163697023910254,
+        "support": 622.0
+      }
+    },
+    "split": {
+      "method": "StratifiedGroupKFold(n_splits=5)",
+      "note": "Strict grouped split estimates generalization to held-out sessions.",
+      "unique_groups": 23,
+      "train_rows": 2531,
+      "test_rows": 622,
+      "train_groups": 15,
+      "test_groups": 8,
+      "train_label_counts": {
+        "NORMAL_ROAD": 1645,
+        "ROAD_ANOMALY": 886
+      },
+      "test_label_counts": {
+        "NORMAL_ROAD": 519,
+        "ROAD_ANOMALY": 103
+      }
+    },
+    "mean_test_confidence": 0.7769306484964752
+  },
+  "split": {
+    "method": "StratifiedGroupKFold(n_splits=5)",
+    "note": "Strict grouped split estimates generalization to held-out sessions.",
+    "unique_groups": 23,
+    "train_rows": 2531,
+    "test_rows": 622,
+    "train_groups": 15,
+    "test_groups": 8,
+    "train_label_counts": {
+      "NORMAL_ROAD": 1645,
+      "ROAD_ANOMALY": 886
+    },
+    "test_label_counts": {
+      "NORMAL_ROAD": 519,
+      "ROAD_ANOMALY": 103
+    }
+  }
+}

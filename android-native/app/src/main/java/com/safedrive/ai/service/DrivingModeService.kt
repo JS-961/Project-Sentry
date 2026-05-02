@@ -18,6 +18,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.speech.tts.TextToSpeech
 import android.telephony.SmsManager
 import android.util.Log
@@ -36,6 +37,8 @@ import com.safedrive.ai.data.RiskCounters
 import com.safedrive.ai.data.local.CrashAlertEntity
 import com.safedrive.ai.data.local.RiskEventEntity
 import com.safedrive.ai.data.local.TripEntity
+import com.safedrive.ai.ml.AdvisoryRiskClassifier
+import com.safedrive.ai.ml.AdvisorySensorSample
 import com.safedrive.ai.ui.CrashCountdownActivity
 import kotlin.coroutines.resume
 import kotlin.math.abs
@@ -60,9 +63,11 @@ class DrivingModeService : Service(), SensorEventListener {
     private val riskEventDao by lazy { app.database.riskEventDao() }
     private val crashAlertDao by lazy { app.database.crashAlertDao() }
     private val settingsRepository by lazy { app.settingsRepository }
+    private lateinit var advisoryRiskClassifier: AdvisoryRiskClassifier
 
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
+    private var linearAccelerometer: Sensor? = null
     private var gyroscope: Sensor? = null
     private val fusedLocation by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
@@ -73,21 +78,31 @@ class DrivingModeService : Service(), SensorEventListener {
     private var currentTripId: Long? = null
     private var latestLocation: Location? = null
     private var latestSpeedMps = 0f
+    private var latestReliableSpeedMps = 0f
+    private var lastReliableSpeedMs = 0L
     private var lastSpeedMps = 0f
     private var lastSpeedUpdateMs = 0L
     private var lastAccelMagnitude = SensorManager.GRAVITY_EARTH
     private var lastAccelUpdateMs = 0L
+    private var lastAccelEventTimestampNs = 0L
+    private var lastMlAccelMagnitude = 0f
+    private var lastMlAccelUpdateMs = 0L
+    private var hasLinearAccelerationSensor = false
+    private var currentGyroX = 0f
+    private var currentGyroY = 0f
     private var currentGyroZ = 0f
     private var lastNotificationRisk = Int.MIN_VALUE
     private var lastNotificationSpeedKmh = Int.MIN_VALUE
     private var lastNotificationUpdateMs = 0L
     private var lastSensorHeartbeatPublishMs = 0L
+    private var lastMlRiskPublishMs = 0L
 
     private var lastHarshBrakeMs = 0L
     private var lastHarshAccelMs = 0L
     private var lastCorneringMs = 0L
     private var lastSpeedingMs = 0L
     private var lastCrashMs = 0L
+    private var lastCrashGateLogMs = 0L
 
     private var riskScore = 0
     private var counters = RiskCounters()
@@ -99,6 +114,7 @@ class DrivingModeService : Service(), SensorEventListener {
     private var crashValidationJob: Job? = null
     private var pendingCrash: PendingCrash? = null
     private var pendingCrashCandidate: CrashCandidate? = null
+    private var crashEvidence: CrashEvidence? = null
 
     private val sensorBuffer = CircularSensorBuffer(capacity = 2048)
     private val speedHistory = ArrayDeque<SpeedPoint>()
@@ -119,8 +135,10 @@ class DrivingModeService : Service(), SensorEventListener {
 
     override fun onCreate() {
         super.onCreate()
+        advisoryRiskClassifier = AdvisoryRiskClassifier(this)
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        linearAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         createNotificationChannels()
     }
@@ -176,29 +194,42 @@ class DrivingModeService : Service(), SensorEventListener {
         lastSpeedUpdateMs = 0L
         lastAccelMagnitude = SensorManager.GRAVITY_EARTH
         lastAccelUpdateMs = 0L
+        lastMlAccelMagnitude = 0f
+        lastMlAccelUpdateMs = 0L
+        lastAccelEventTimestampNs = 0L
+        hasLinearAccelerationSensor = linearAccelerometer != null
+        currentGyroX = 0f
+        currentGyroY = 0f
         currentGyroZ = 0f
         latestLocation = null
         latestSpeedMps = 0f
+        latestReliableSpeedMps = 0f
+        lastReliableSpeedMs = 0L
         lastNotificationRisk = Int.MIN_VALUE
         lastNotificationSpeedKmh = Int.MIN_VALUE
         lastNotificationUpdateMs = 0L
         lastSensorHeartbeatPublishMs = 0L
+        lastMlRiskPublishMs = 0L
         lastHarshBrakeMs = 0L
         lastHarshAccelMs = 0L
         lastCorneringMs = 0L
         lastSpeedingMs = 0L
         lastCrashMs = 0L
+        lastCrashGateLogMs = 0L
         pendingCrash = null
         pendingCrashCandidate = null
+        crashEvidence = null
         crashValidationJob?.cancel()
         speedHistory.clear()
         sensorBuffer.clear()
+        advisoryRiskClassifier.reset()
 
         startForeground(NOTIFICATION_ID, buildDrivingNotification())
         captureNotificationSnapshot()
         startSensorsAndLocation()
         DrivingStateStore.setDrivingActive(true)
         DrivingStateStore.updateRisk(riskScore = 0, counters = counters)
+        DrivingStateStore.updateMlRisk(riskScore = 0, label = "Collecting", confidence = 0f, source = "baseline")
         DrivingStateStore.setLatestEvent("Monitoring started")
         startRiskDecayLoop()
 
@@ -220,6 +251,7 @@ class DrivingModeService : Service(), SensorEventListener {
         DrivingStateStore.setCrashCountdownActive(false)
         pendingCrash = null
         pendingCrashCandidate = null
+        crashEvidence = null
         stopSensorsAndLocation()
         decayJob?.cancel()
         crashValidationJob?.cancel()
@@ -255,6 +287,7 @@ class DrivingModeService : Service(), SensorEventListener {
     @SuppressLint("MissingPermission")
     private fun startSensorsAndLocation() {
         accelerometer?.let { sensorManager.registerListener(this, it, SENSOR_DELAY_US) }
+        linearAccelerometer?.let { sensorManager.registerListener(this, it, SENSOR_DELAY_US) }
         gyroscope?.let { sensorManager.registerListener(this, it, SENSOR_DELAY_US) }
 
         if (hasLocationPermission()) {
@@ -288,6 +321,7 @@ class DrivingModeService : Service(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent) {
         if (!isDriving) return
         val now = System.currentTimeMillis()
+        val eventTimeMs = sensorEventEpochMs(event, now)
         if (now - lastSensorHeartbeatPublishMs >= SENSOR_HEARTBEAT_PUBLISH_MS) {
             lastSensorHeartbeatPublishMs = now
             DrivingStateStore.setSensorHeartbeat(now)
@@ -299,22 +333,27 @@ class DrivingModeService : Service(), SensorEventListener {
                 val az = event.values[2]
                 val magnitude = sqrt(ax * ax + ay * ay + az * az)
                 val linearAccel = abs(magnitude - SensorManager.GRAVITY_EARTH)
-                val dtSeconds = ((now - lastAccelUpdateMs).coerceAtLeast(1L)) / 1000f
-                val jerk = abs(magnitude - lastAccelMagnitude) / dtSeconds
-                lastAccelMagnitude = magnitude
-                lastAccelUpdateMs = now
+                val gForce = magnitude / SensorManager.GRAVITY_EARTH
+                val jerkResult = computeCrashJerk(event.timestamp, eventTimeMs, magnitude)
+                val jerk = jerkResult.value
+                lastAccelUpdateMs = eventTimeMs
 
                 sensorBuffer.add(
                     SensorSnapshot(
-                        timestampMs = now,
+                        timestampMs = eventTimeMs,
                         ax = ax,
                         ay = ay,
                         az = az,
+                        gForce = gForce,
                         linearAccel = linearAccel,
+                        jerk = jerk,
                         gyroZ = currentGyroZ,
                         speedMps = latestSpeedMps,
                     ),
                 )
+                if (!hasLinearAccelerationSensor) {
+                    addAdvisoryRiskSample(now, linearAccel)
+                }
 
                 if (latestSpeedMps >= SHARP_CORNERING_MIN_SPEED_MPS &&
                     linearAccel >= SHARP_CORNERING_MIN_LINEAR_ACCEL &&
@@ -326,22 +365,56 @@ class DrivingModeService : Service(), SensorEventListener {
                 }
 
                 val crashImpact = linearAccel >= CRASH_LINEAR_ACCEL_THRESHOLD
-                val crashJerk = jerk >= CRASH_JERK_THRESHOLD
+                val crashJerk = jerkResult.isUsable &&
+                    jerk >= CRASH_JERK_THRESHOLD &&
+                    linearAccel >= CRASH_MIN_LINEAR_ACCEL_FOR_JERK
                 if (crashImpact || crashJerk) {
+                    val evidence = updateCrashEvidence(
+                        now = eventTimeMs,
+                        gForce = gForce,
+                        linearAccel = linearAccel,
+                        jerk = jerk,
+                        reason = crashTriggerReason(crashImpact, crashJerk),
+                    )
                     val speedDrop = recentSpeedDrop()
-                    val speedGate = latestSpeedMps >= CRASH_MIN_SPEED_MPS || speedDrop >= CRASH_MIN_SPEED_DROP_MPS
-                    if (speedGate && now - lastCrashMs >= CRASH_COOLDOWN_MS) {
+                    val baselineSpeed = currentBaselineSpeedMps(now)
+                    val hasSpeedEvidence = hasRecentReliableSpeed(now)
+                    val speedGate = hasSpeedEvidence &&
+                        (baselineSpeed >= CRASH_MIN_SPEED_MPS || speedDrop >= CRASH_MIN_SPEED_DROP_MPS)
+                    val cooldownElapsed = now - lastCrashMs >= CRASH_COOLDOWN_MS
+                    if (evidence.readyForValidation && speedGate && cooldownElapsed) {
                         stageCrashCandidate(
+                            evidence = evidence,
+                            baselineSpeed = baselineSpeed,
+                            speedDrop = speedDrop,
+                        )
+                    } else if (evidence.readyForValidation) {
+                        logCrashGateBlockedIfNeeded(
                             now = now,
-                            linearAccel = linearAccel,
-                            jerk = jerk,
+                            evidence = evidence,
+                            baselineSpeed = baselineSpeed,
+                            speedDrop = speedDrop,
+                            hasSpeedEvidence = hasSpeedEvidence,
+                            cooldownElapsed = cooldownElapsed,
                         )
                     }
+                } else {
+                    maybeResetCrashEvidence(eventTimeMs)
                 }
             }
 
             Sensor.TYPE_GYROSCOPE -> {
+                currentGyroX = event.values[0]
+                currentGyroY = event.values[1]
                 currentGyroZ = event.values[2]
+            }
+
+            Sensor.TYPE_LINEAR_ACCELERATION -> {
+                val ax = event.values[0]
+                val ay = event.values[1]
+                val az = event.values[2]
+                val linearAccel = sqrt(ax * ax + ay * ay + az * az)
+                addAdvisoryRiskSample(now, linearAccel)
             }
         }
     }
@@ -356,6 +429,8 @@ class DrivingModeService : Service(), SensorEventListener {
         DrivingStateStore.setSpeedKmh(latestSpeedMps * 3.6f)
 
         if (isReliableForMotion(location)) {
+            latestReliableSpeedMps = latestSpeedMps
+            lastReliableSpeedMs = now
             speedHistory.addLast(SpeedPoint(timestampMs = now, speedMps = latestSpeedMps))
             while (speedHistory.isNotEmpty() && now - speedHistory.first().timestampMs > SPEED_HISTORY_WINDOW_MS) {
                 speedHistory.removeFirst()
@@ -436,6 +511,40 @@ class DrivingModeService : Service(), SensorEventListener {
             counters = counters,
         )
         refreshDrivingNotificationIfNeeded()
+    }
+
+    private fun publishAdvisoryRiskIfNeeded(now: Long) {
+        if (now - lastMlRiskPublishMs < ML_RISK_PUBLISH_INTERVAL_MS) return
+        val result = advisoryRiskClassifier.classifyIfReady(now) ?: return
+        lastMlRiskPublishMs = now
+        DrivingStateStore.updateMlRisk(
+            riskScore = result.riskScore,
+            label = result.label,
+            confidence = result.confidence,
+            source = result.source,
+        )
+    }
+
+    private fun addAdvisoryRiskSample(now: Long, linearAccel: Float) {
+        val dtSeconds = if (lastMlAccelUpdateMs > 0L) {
+            ((now - lastMlAccelUpdateMs).coerceAtLeast(1L)) / 1000f
+        } else {
+            1f / (1_000_000f / SENSOR_DELAY_US)
+        }
+        val jerk = abs(linearAccel - lastMlAccelMagnitude) / dtSeconds
+        lastMlAccelMagnitude = linearAccel
+        lastMlAccelUpdateMs = now
+        advisoryRiskClassifier.addSample(
+            AdvisorySensorSample(
+                timestampMs = now,
+                linearAccel = linearAccel,
+                jerk = jerk,
+                gyroX = currentGyroX,
+                gyroY = currentGyroY,
+                gyroZ = currentGyroZ,
+            ),
+        )
+        publishAdvisoryRiskIfNeeded(now)
     }
 
     private fun triggerCrashCountdown(
@@ -525,7 +634,7 @@ class DrivingModeService : Service(), SensorEventListener {
         } else {
             "Location unavailable"
         }
-        val message = "Project Sentry demo alert: potential crash detected. $mapsLink"
+        val message = "CRASH DETECTED! Send help to that location. $mapsLink"
 
         return try {
             val smsManager = SmsManager.getDefault()
@@ -596,37 +705,150 @@ class DrivingModeService : Service(), SensorEventListener {
         }
     }
 
+    private fun sensorEventEpochMs(event: SensorEvent, now: Long): Long {
+        if (event.timestamp <= 0L) return now
+        val eventAgeMs = ((SystemClock.elapsedRealtimeNanos() - event.timestamp).coerceAtLeast(0L)) / 1_000_000L
+        return now - eventAgeMs
+    }
+
+    private fun computeCrashJerk(
+        timestampNs: Long,
+        eventTimeMs: Long,
+        magnitude: Float,
+    ): JerkSample {
+        val previousTimestampNs = lastAccelEventTimestampNs
+        val previousMagnitude = lastAccelMagnitude
+        if (previousTimestampNs <= 0L || timestampNs <= previousTimestampNs) {
+            lastAccelMagnitude = magnitude
+            lastAccelEventTimestampNs = timestampNs
+            lastAccelUpdateMs = eventTimeMs
+            resetCrashEvidence()
+            return JerkSample(value = 0f, isUsable = false)
+        }
+
+        val dtSeconds = (timestampNs - previousTimestampNs) / 1_000_000_000f
+        if (dtSeconds < CRASH_MIN_JERK_DELTA_SECONDS) {
+            return JerkSample(value = 0f, isUsable = false)
+        }
+
+        lastAccelMagnitude = magnitude
+        lastAccelEventTimestampNs = timestampNs
+        lastAccelUpdateMs = eventTimeMs
+
+        if (dtSeconds > CRASH_MAX_JERK_DELTA_SECONDS) {
+            resetCrashEvidence()
+            return JerkSample(value = 0f, isUsable = false)
+        }
+
+        return JerkSample(
+            value = abs(magnitude - previousMagnitude) / dtSeconds,
+            isUsable = true,
+        )
+    }
+
+    private fun updateCrashEvidence(
+        now: Long,
+        gForce: Float,
+        linearAccel: Float,
+        jerk: Float,
+        reason: String,
+    ): CrashEvidence {
+        val existing = crashEvidence
+        val startNewWindow = existing == null || now - existing.lastSampleEpochMs > CRASH_EVIDENCE_GAP_RESET_MS
+        val startedAt = if (startNewWindow) now else existing!!.startedAtEpochMs
+        val triggerReason = when {
+            startNewWindow -> reason
+            existing?.triggerReason == reason -> reason
+            else -> "mixed sensor evidence"
+        }
+        val consecutiveSamples = if (startNewWindow) 1 else (existing?.consecutiveCrashLikeSamples ?: 0) + 1
+        val durationMs = (now - startedAt).coerceAtLeast(0L)
+        val updated = CrashEvidence(
+            startedAtEpochMs = startedAt,
+            lastSampleEpochMs = now,
+            peakGForce = if (startNewWindow) gForce else max(existing?.peakGForce ?: 0f, gForce),
+            peakLinearAccel = if (startNewWindow) linearAccel else max(existing?.peakLinearAccel ?: 0f, linearAccel),
+            peakJerk = if (startNewWindow) jerk else max(existing?.peakJerk ?: 0f, jerk),
+            consecutiveCrashLikeSamples = consecutiveSamples,
+            durationMs = durationMs,
+            triggerReason = triggerReason,
+            readyForValidation = consecutiveSamples >= CRASH_IMPACT_SAMPLE_COUNT &&
+                durationMs >= CRASH_MIN_EVIDENCE_DURATION_MS,
+        )
+        crashEvidence = updated
+        return updated
+    }
+
+    private fun maybeResetCrashEvidence(now: Long) {
+        val existing = crashEvidence ?: return
+        if (now - existing.lastSampleEpochMs > CRASH_EVIDENCE_GAP_RESET_MS) {
+            resetCrashEvidence()
+        }
+    }
+
+    private fun resetCrashEvidence() {
+        crashEvidence = null
+    }
+
+    private fun crashTriggerReason(crashImpact: Boolean, crashJerk: Boolean): String {
+        return when {
+            crashImpact && crashJerk -> "impact+jerk"
+            crashImpact -> "impact"
+            crashJerk -> "jerk"
+            else -> "unknown"
+        }
+    }
+
+    private fun hasRecentReliableSpeed(now: Long): Boolean {
+        return lastReliableSpeedMs > 0L && now - lastReliableSpeedMs <= CRASH_SPEED_EVIDENCE_MAX_AGE_MS
+    }
+
     private fun recentSpeedDrop(): Float {
-        if (speedHistory.size < 2) return 0f
-        val maxSpeed = speedHistory.maxOf { it.speedMps }
-        val minSpeed = speedHistory.minOf { it.speedMps }
-        return (maxSpeed - minSpeed).coerceAtLeast(0f)
+        val now = System.currentTimeMillis()
+        if (!hasRecentReliableSpeed(now) || speedHistory.size < 2) return 0f
+        val maxSpeed = speedHistory
+            .filter { now - it.timestampMs <= SPEED_HISTORY_WINDOW_MS }
+            .maxOfOrNull { it.speedMps } ?: return 0f
+        return (maxSpeed - latestReliableSpeedMps).coerceAtLeast(0f)
     }
 
     private fun stageCrashCandidate(
-        now: Long,
-        linearAccel: Float,
-        jerk: Float,
+        evidence: CrashEvidence,
+        baselineSpeed: Float,
+        speedDrop: Float,
     ) {
         val existing = pendingCrashCandidate
         if (existing != null) {
             pendingCrashCandidate = existing.copy(
-                peakLinearAccel = max(existing.peakLinearAccel, linearAccel),
-                peakJerk = max(existing.peakJerk, jerk),
+                lastEvidenceEpochMs = evidence.lastSampleEpochMs,
+                peakGForce = max(existing.peakGForce, evidence.peakGForce),
+                peakLinearAccel = max(existing.peakLinearAccel, evidence.peakLinearAccel),
+                peakJerk = max(existing.peakJerk, evidence.peakJerk),
+                consecutiveCrashLikeSamples = max(
+                    existing.consecutiveCrashLikeSamples,
+                    evidence.consecutiveCrashLikeSamples,
+                ),
+                evidenceDurationMs = max(existing.evidenceDurationMs, evidence.durationMs),
+                speedDropAtStagingMps = max(existing.speedDropAtStagingMps, speedDrop),
             )
             return
         }
 
-        val baselineSpeed = currentBaselineSpeedMps()
         pendingCrashCandidate = CrashCandidate(
-            detectedAtEpochMs = now,
+            detectedAtEpochMs = evidence.startedAtEpochMs,
+            lastEvidenceEpochMs = evidence.lastSampleEpochMs,
             baselineSpeedMps = baselineSpeed,
-            peakLinearAccel = linearAccel,
-            peakJerk = jerk,
+            peakGForce = evidence.peakGForce,
+            peakLinearAccel = evidence.peakLinearAccel,
+            peakJerk = evidence.peakJerk,
+            consecutiveCrashLikeSamples = evidence.consecutiveCrashLikeSamples,
+            evidenceDurationMs = evidence.durationMs,
+            speedDropAtStagingMps = speedDrop,
+            triggerReason = evidence.triggerReason,
         )
         Log.d(
             TAG,
-            "Crash candidate staged accel=${"%.1f".format(linearAccel)} jerk=${"%.1f".format(jerk)} baseline=${"%.1f".format(baselineSpeed)}",
+            "Crash candidate staged ${formatCrashEvidence(evidence, baselineSpeed, speedDrop)}",
         )
 
         crashValidationJob?.cancel()
@@ -639,39 +861,117 @@ class DrivingModeService : Service(), SensorEventListener {
     private fun evaluatePendingCrashCandidate() {
         val candidate = pendingCrashCandidate ?: return
         pendingCrashCandidate = null
+        resetCrashEvidence()
+        val now = System.currentTimeMillis()
 
-        val observedSpeedDrop = max(
-            (candidate.baselineSpeedMps - latestSpeedMps).coerceAtLeast(0f),
-            recentSpeedDrop(),
-        )
-        val repeatedImpact = sensorBuffer.countImpactSamplesSince(
+        val hasSpeedEvidence = hasRecentReliableSpeed(now)
+        val observedSpeedDrop = if (hasSpeedEvidence) {
+            max(
+                candidate.speedDropAtStagingMps,
+                max(
+                    (candidate.baselineSpeedMps - latestReliableSpeedMps).coerceAtLeast(0f),
+                    recentSpeedDrop(),
+                ),
+            )
+        } else {
+            0f
+        }
+        val summary = sensorBuffer.crashEvidenceSummary(
             sinceMs = candidate.detectedAtEpochMs - CRASH_SENSOR_LOOKBACK_MS,
+            untilMs = candidate.lastEvidenceEpochMs + CRASH_SENSOR_LOOKAHEAD_MS,
             linearAccelThreshold = CRASH_IMPACT_SAMPLE_THRESHOLD,
-        ) >= CRASH_IMPACT_SAMPLE_COUNT
-        val severeImpact = candidate.peakLinearAccel >= CRASH_SEVERE_LINEAR_ACCEL_THRESHOLD ||
-            candidate.peakJerk >= CRASH_SEVERE_JERK_THRESHOLD
-        val hardStop = latestSpeedMps <= CRASH_POST_EVENT_SPEED_MAX_MPS &&
+            jerkThreshold = CRASH_JERK_THRESHOLD,
+            minLinearAccelForJerk = CRASH_MIN_LINEAR_ACCEL_FOR_JERK,
+        )
+        val peakGForce = max(candidate.peakGForce, summary.peakGForce)
+        val peakLinearAccel = max(candidate.peakLinearAccel, summary.peakLinearAccel)
+        val peakJerk = max(candidate.peakJerk, summary.peakJerk)
+        val crashLikeSamples = max(candidate.consecutiveCrashLikeSamples, summary.crashLikeSamples)
+        val evidenceDurationMs = max(candidate.evidenceDurationMs, summary.durationMs)
+        val sustainedImpact = crashLikeSamples >= CRASH_IMPACT_SAMPLE_COUNT &&
+            evidenceDurationMs >= CRASH_MIN_EVIDENCE_DURATION_MS
+        val severeImpact = (peakLinearAccel >= CRASH_SEVERE_LINEAR_ACCEL_THRESHOLD ||
+            peakJerk >= CRASH_SEVERE_JERK_THRESHOLD) &&
+            crashLikeSamples >= CRASH_SEVERE_IMPACT_SAMPLE_COUNT
+        val hardStop = hasSpeedEvidence &&
+            latestReliableSpeedMps <= CRASH_POST_EVENT_SPEED_MAX_MPS &&
             candidate.baselineSpeedMps >= CRASH_MIN_SPEED_MPS
+        val speedConfirmed = hasSpeedEvidence &&
+            (observedSpeedDrop >= CRASH_VALIDATED_SPEED_DROP_MPS || hardStop)
+        val cooldownElapsed = now - lastCrashMs >= CRASH_COOLDOWN_MS
 
-        if ((repeatedImpact || severeImpact) &&
-            (observedSpeedDrop >= CRASH_VALIDATED_SPEED_DROP_MPS || hardStop) &&
-            System.currentTimeMillis() - lastCrashMs >= CRASH_COOLDOWN_MS
-        ) {
-            lastCrashMs = System.currentTimeMillis()
+        if ((sustainedImpact || severeImpact) && speedConfirmed && cooldownElapsed) {
+            lastCrashMs = now
+            val reason = "validated ${candidate.triggerReason}"
+            Log.w(
+                TAG,
+                "Crash countdown triggered reason=$reason peakG=${"%.2f".format(peakGForce)} " +
+                    "peakAccel=${"%.1f".format(peakLinearAccel)} peakJerk=${"%.1f".format(peakJerk)} " +
+                    "samples=$crashLikeSamples windowMs=$evidenceDurationMs " +
+                    "baselineSpeed=${"%.1f".format(candidate.baselineSpeedMps)} " +
+                    "currentSpeed=${"%.1f".format(latestReliableSpeedMps)} " +
+                    "speedDrop=${"%.1f".format(observedSpeedDrop)} hardStop=$hardStop",
+            )
             triggerCrashCountdown(
                 simulated = false,
-                reason = "Validated impact (accel=${"%.1f".format(candidate.peakLinearAccel)}, jerk=${"%.1f".format(candidate.peakJerk)}, speedDrop=${"%.1f".format(observedSpeedDrop)})",
+                reason = "Validated impact (peakG=${"%.2f".format(peakGForce)}, accel=${"%.1f".format(peakLinearAccel)}, jerk=${"%.1f".format(peakJerk)}, samples=$crashLikeSamples, windowMs=$evidenceDurationMs, speedDrop=${"%.1f".format(observedSpeedDrop)})",
             )
         } else {
             Log.d(
                 TAG,
-                "Crash candidate ignored accel=${"%.1f".format(candidate.peakLinearAccel)} jerk=${"%.1f".format(candidate.peakJerk)} speedDrop=${"%.1f".format(observedSpeedDrop)} hardStop=$hardStop repeated=$repeatedImpact",
+                "Crash candidate ignored reason=${candidate.triggerReason} peakG=${"%.2f".format(peakGForce)} " +
+                    "peakAccel=${"%.1f".format(peakLinearAccel)} peakJerk=${"%.1f".format(peakJerk)} " +
+                    "samples=$crashLikeSamples windowMs=$evidenceDurationMs " +
+                    "baselineSpeed=${"%.1f".format(candidate.baselineSpeedMps)} " +
+                    "currentSpeed=${"%.1f".format(latestReliableSpeedMps)} " +
+                    "speedDrop=${"%.1f".format(observedSpeedDrop)} hardStop=$hardStop " +
+                    "sustained=$sustainedImpact severe=$severeImpact speedConfirmed=$speedConfirmed " +
+                    "cooldownElapsed=$cooldownElapsed",
             )
         }
     }
 
-    private fun currentBaselineSpeedMps(): Float {
-        return speedHistory.maxOfOrNull { it.speedMps } ?: latestSpeedMps
+    private fun currentBaselineSpeedMps(now: Long): Float {
+        if (!hasRecentReliableSpeed(now)) return 0f
+        val historyMax = speedHistory
+            .filter { now - it.timestampMs <= SPEED_HISTORY_WINDOW_MS }
+            .maxOfOrNull { it.speedMps }
+        return max(historyMax ?: latestReliableSpeedMps, latestReliableSpeedMps)
+    }
+
+    private fun logCrashGateBlockedIfNeeded(
+        now: Long,
+        evidence: CrashEvidence,
+        baselineSpeed: Float,
+        speedDrop: Float,
+        hasSpeedEvidence: Boolean,
+        cooldownElapsed: Boolean,
+    ) {
+        if (now - lastCrashGateLogMs < CRASH_GATE_LOG_INTERVAL_MS) return
+        lastCrashGateLogMs = now
+        val blockReason = when {
+            !hasSpeedEvidence -> "missing recent reliable speed"
+            !cooldownElapsed -> "cooldown"
+            baselineSpeed < CRASH_MIN_SPEED_MPS && speedDrop < CRASH_MIN_SPEED_DROP_MPS -> "motion gate"
+            else -> "pending validation gate"
+        }
+        Log.d(
+            TAG,
+            "Crash evidence blocked reason=$blockReason ${formatCrashEvidence(evidence, baselineSpeed, speedDrop)}",
+        )
+    }
+
+    private fun formatCrashEvidence(
+        evidence: CrashEvidence,
+        baselineSpeed: Float,
+        speedDrop: Float,
+    ): String {
+        return "reason=${evidence.triggerReason} peakG=${"%.2f".format(evidence.peakGForce)} " +
+            "peakAccel=${"%.1f".format(evidence.peakLinearAccel)} " +
+            "peakJerk=${"%.1f".format(evidence.peakJerk)} " +
+            "samples=${evidence.consecutiveCrashLikeSamples} windowMs=${evidence.durationMs} " +
+            "baselineSpeed=${"%.1f".format(baselineSpeed)} currentSpeed=${"%.1f".format(latestReliableSpeedMps)} " +
+            "speedDrop=${"%.1f".format(speedDrop)}"
     }
 
     private fun isReliableForMotion(location: Location): Boolean {
@@ -844,11 +1144,17 @@ class DrivingModeService : Service(), SensorEventListener {
         private const val EVENT_COOLDOWN_MS = 4_000L
         private const val SPEEDING_COOLDOWN_MS = 8_000L
         private const val SPEED_HISTORY_WINDOW_MS = 5_000L
-        private const val CRASH_COOLDOWN_MS = 20_000L
-        private const val CRASH_VALIDATION_DELAY_MS = 1_500L
-        private const val CRASH_SENSOR_LOOKBACK_MS = 250L
+        private const val CRASH_COOLDOWN_MS = 45_000L
+        private const val CRASH_VALIDATION_DELAY_MS = 2_000L
+        private const val CRASH_SENSOR_LOOKBACK_MS = 350L
+        private const val CRASH_SENSOR_LOOKAHEAD_MS = 250L
+        private const val CRASH_EVIDENCE_GAP_RESET_MS = 160L
+        private const val CRASH_MIN_EVIDENCE_DURATION_MS = 60L
+        private const val CRASH_SPEED_EVIDENCE_MAX_AGE_MS = 3_000L
+        private const val CRASH_GATE_LOG_INTERVAL_MS = 1_500L
         private const val NOTIFICATION_MIN_UPDATE_INTERVAL_MS = 5_000L
         private const val SENSOR_HEARTBEAT_PUBLISH_MS = 2_000L
+        private const val ML_RISK_PUBLISH_INTERVAL_MS = 1_000L
 
         private const val RISK_DECAY_PER_SECOND = 2
         private const val NOTIFICATION_RISK_DELTA = 5
@@ -864,18 +1170,22 @@ class DrivingModeService : Service(), SensorEventListener {
         private const val SHARP_CORNERING_MIN_LINEAR_ACCEL = 2.5f
         private const val SPEEDING_THRESHOLD_MPS = 22.2f // ~80 km/h demo threshold
 
-        private const val CRASH_LINEAR_ACCEL_THRESHOLD = 18f
-        private const val CRASH_JERK_THRESHOLD = 40f
+        private const val CRASH_MIN_JERK_DELTA_SECONDS = 0.020f
+        private const val CRASH_MAX_JERK_DELTA_SECONDS = 0.500f
+        private const val CRASH_LINEAR_ACCEL_THRESHOLD = 22f
+        private const val CRASH_JERK_THRESHOLD = 120f
+        private const val CRASH_MIN_LINEAR_ACCEL_FOR_JERK = 8f
         private const val CRASH_MIN_SPEED_MPS = 5.5f
-        private const val CRASH_MIN_SPEED_DROP_MPS = 4.5f
-        private const val CRASH_VALIDATED_SPEED_DROP_MPS = 3.5f
+        private const val CRASH_MIN_SPEED_DROP_MPS = 5.5f
+        private const val CRASH_VALIDATED_SPEED_DROP_MPS = 5.5f
         private const val CRASH_POST_EVENT_SPEED_MAX_MPS = 2.5f
-        private const val CRASH_IMPACT_SAMPLE_THRESHOLD = 12f
-        private const val CRASH_IMPACT_SAMPLE_COUNT = 2
-        private const val CRASH_SEVERE_LINEAR_ACCEL_THRESHOLD = 24f
-        private const val CRASH_SEVERE_JERK_THRESHOLD = 65f
+        private const val CRASH_IMPACT_SAMPLE_THRESHOLD = 16f
+        private const val CRASH_IMPACT_SAMPLE_COUNT = 4
+        private const val CRASH_SEVERE_IMPACT_SAMPLE_COUNT = 2
+        private const val CRASH_SEVERE_LINEAR_ACCEL_THRESHOLD = 30f
+        private const val CRASH_SEVERE_JERK_THRESHOLD = 220f
 
-        private const val DEFAULT_TTS = "This is a Project Sentry demo alert. Please respond."
+        private const val DEFAULT_TTS = "This is a Sentry alert. Please respond."
     }
 }
 
@@ -890,11 +1200,34 @@ private data class PendingCrash(
     val createdAtEpochMs: Long,
 )
 
-private data class CrashCandidate(
-    val detectedAtEpochMs: Long,
-    val baselineSpeedMps: Float,
+private data class JerkSample(
+    val value: Float,
+    val isUsable: Boolean,
+)
+
+private data class CrashEvidence(
+    val startedAtEpochMs: Long,
+    val lastSampleEpochMs: Long,
+    val peakGForce: Float,
     val peakLinearAccel: Float,
     val peakJerk: Float,
+    val consecutiveCrashLikeSamples: Int,
+    val durationMs: Long,
+    val triggerReason: String,
+    val readyForValidation: Boolean,
+)
+
+private data class CrashCandidate(
+    val detectedAtEpochMs: Long,
+    val lastEvidenceEpochMs: Long,
+    val baselineSpeedMps: Float,
+    val peakGForce: Float,
+    val peakLinearAccel: Float,
+    val peakJerk: Float,
+    val consecutiveCrashLikeSamples: Int,
+    val evidenceDurationMs: Long,
+    val speedDropAtStagingMps: Float,
+    val triggerReason: String,
 )
 
 private data class SensorSnapshot(
@@ -902,9 +1235,19 @@ private data class SensorSnapshot(
     val ax: Float,
     val ay: Float,
     val az: Float,
+    val gForce: Float,
     val linearAccel: Float,
+    val jerk: Float,
     val gyroZ: Float,
     val speedMps: Float,
+)
+
+private data class CrashEvidenceSummary(
+    val crashLikeSamples: Int,
+    val durationMs: Long,
+    val peakGForce: Float,
+    val peakLinearAccel: Float,
+    val peakJerk: Float,
 )
 
 private class CircularSensorBuffer(private val capacity: Int) {
@@ -923,19 +1266,45 @@ private class CircularSensorBuffer(private val capacity: Int) {
         count = 0
     }
 
-    fun countImpactSamplesSince(
+    fun crashEvidenceSummary(
         sinceMs: Long,
+        untilMs: Long,
         linearAccelThreshold: Float,
-    ): Int {
+        jerkThreshold: Float,
+        minLinearAccelForJerk: Float,
+    ): CrashEvidenceSummary {
         var total = 0
+        var firstCrashLikeMs: Long? = null
+        var lastCrashLikeMs: Long? = null
+        var peakGForce = 0f
+        var peakLinearAccel = 0f
+        var peakJerk = 0f
         repeat(count) { offset ->
             val position = (index - 1 - offset + capacity) % capacity
             val sample = values[position] ?: return@repeat
-            if (sample.timestampMs < sinceMs) return@repeat
-            if (sample.linearAccel >= linearAccelThreshold) {
+            if (sample.timestampMs < sinceMs || sample.timestampMs > untilMs) return@repeat
+            val crashLike = sample.linearAccel >= linearAccelThreshold ||
+                (sample.jerk >= jerkThreshold && sample.linearAccel >= minLinearAccelForJerk)
+            if (crashLike) {
                 total += 1
+                firstCrashLikeMs = minOf(firstCrashLikeMs ?: sample.timestampMs, sample.timestampMs)
+                lastCrashLikeMs = maxOf(lastCrashLikeMs ?: sample.timestampMs, sample.timestampMs)
+                peakGForce = max(peakGForce, sample.gForce)
+                peakLinearAccel = max(peakLinearAccel, sample.linearAccel)
+                peakJerk = max(peakJerk, sample.jerk)
             }
         }
-        return total
+        val durationMs = if (firstCrashLikeMs != null && lastCrashLikeMs != null) {
+            (lastCrashLikeMs!! - firstCrashLikeMs!!).coerceAtLeast(0L)
+        } else {
+            0L
+        }
+        return CrashEvidenceSummary(
+            crashLikeSamples = total,
+            durationMs = durationMs,
+            peakGForce = peakGForce,
+            peakLinearAccel = peakLinearAccel,
+            peakJerk = peakJerk,
+        )
     }
 }

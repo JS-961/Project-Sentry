@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Project Sentry Native</string>
-    <string name="driving_notification_title">Project Sentry Driving Mode</string>
+    <string name="app_name">Sentry</string>
+    <string name="driving_notification_title">Sentry Driving Mode</string>
     <string name="driving_notification_text">Monitoring risk and crash events</string>
     <string name="stop_driving">Stop Driving Mode</string>
 </resources>

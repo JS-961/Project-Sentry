@@ -84,7 +84,7 @@ fun SettingsScreen(
             item {
                 SettingsCard(
                     title = "Crash Flow Readiness",
-                    subtitle = "Permissions and contacts required for the live demo.",
+                    subtitle = "Permissions and contacts required before escalation.",
                 ) {
                     PermissionRow("Location", permissionStatus.location)
                     PermissionRow("Notifications", permissionStatus.notifications)
@@ -96,7 +96,7 @@ fun SettingsScreen(
             item {
                 SettingsCard(
                     title = "Emergency Contacts",
-                    subtitle = "One phone number per line. Use real demo-safe numbers.",
+                    subtitle = "One phone number per line. Use test-safe numbers.",
                 ) {
                     OutlinedTextField(
                         value = contactsText,
@@ -154,7 +154,7 @@ fun SettingsScreen(
 
             item {
                 SettingsCard(
-                    title = "Demo Tools",
+                    title = "Flow Tools",
                     subtitle = "Use this after saving to verify countdown, notification, SMS, call, and TTS together.",
                 ) {
                     Button(
