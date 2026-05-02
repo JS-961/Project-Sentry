@@ -1,6 +1,7 @@
 package com.safedrive.ai.ml
 
 import android.content.Context
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.min
@@ -25,13 +26,18 @@ data class AdvisoryRiskResult(
 )
 
 class AdvisoryRiskClassifier(context: Context) {
+    private val appContext = context.applicationContext
     private val featureWindow = AdvisoryFeatureWindow()
     private val smoother = AdvisoryRiskSmoother()
-    private val model = AdvisoryRiskModel.load(context.applicationContext)
+    private val loadingStarted = AtomicBoolean(false)
+
+    @Volatile
+    private var model: AdvisoryRiskModel = BaselineAdvisoryRiskModel
 
     fun reset() {
         featureWindow.clear()
         smoother.clear()
+        warmUp()
     }
 
     fun addSample(sample: AdvisorySensorSample) {
@@ -40,7 +46,23 @@ class AdvisoryRiskClassifier(context: Context) {
 
     fun classifyIfReady(nowMs: Long): AdvisoryRiskResult? {
         val features = featureWindow.features(nowMs) ?: return null
+        warmUp()
         return smoother.add(model.classify(features))
+    }
+
+    fun warmUp() {
+        if (!loadingStarted.compareAndSet(false, true)) return
+        Thread {
+            model = try {
+                AdvisoryRiskModel.load(appContext)
+            } catch (_: Throwable) {
+                BaselineAdvisoryRiskModel
+            }
+        }.apply {
+            name = "sentry-advisory-risk-loader"
+            isDaemon = true
+            start()
+        }
     }
 }
 
@@ -232,14 +254,15 @@ private class LogisticRegressionAdvisoryRiskModel(
             (raw - mean[index]) / divisor
         }
 
-        val logits = FloatArray(classes.size) { classIndex ->
-            var value = intercepts[classIndex]
-            for (featureIndex in normalized.indices) {
-                value += coefficients[classIndex][featureIndex] * normalized[featureIndex]
+        val probabilities = if (classes.size == 2 && coefficients.size == 1 && intercepts.size == 1) {
+            val positiveProbability = sigmoid(logit(coefficients[0], intercepts[0], normalized))
+            floatArrayOf(1f - positiveProbability, positiveProbability)
+        } else {
+            val logits = FloatArray(classes.size) { classIndex ->
+                logit(coefficients[classIndex], intercepts[classIndex], normalized)
             }
-            value
+            softmax(logits)
         }
-        val probabilities = softmax(logits)
         val bestIndex = probabilities.indices.maxBy { probabilities[it] }
         val label = classes[bestIndex]
         val confidence = probabilities[bestIndex]
@@ -265,6 +288,14 @@ private class LogisticRegressionAdvisoryRiskModel(
             "AGGRESSIVE" -> 40..70
             else -> 0..30
         }
+    }
+
+    private fun logit(coefficientRow: FloatArray, intercept: Float, normalized: FloatArray): Float {
+        var value = intercept
+        for (featureIndex in normalized.indices) {
+            value += coefficientRow[featureIndex] * normalized[featureIndex]
+        }
+        return value
     }
 
     companion object {
@@ -406,6 +437,10 @@ private fun softmax(values: FloatArray): FloatArray {
     val exps = values.map { exp((it - maxValue).toDouble()).toFloat() }
     val total = exps.sum().coerceAtLeast(0.000001f)
     return FloatArray(exps.size) { index -> exps[index] / total }
+}
+
+private fun sigmoid(value: Float): Float {
+    return (1.0 / (1.0 + exp(-value.toDouble()))).toFloat()
 }
 
 private fun List<Float>.mean(): Float {

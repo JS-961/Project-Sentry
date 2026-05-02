@@ -222,9 +222,9 @@ class DrivingModeService : Service(), SensorEventListener {
         crashValidationJob?.cancel()
         speedHistory.clear()
         sensorBuffer.clear()
-        advisoryRiskClassifier.reset()
 
         startForeground(NOTIFICATION_ID, buildDrivingNotification())
+        advisoryRiskClassifier.reset()
         captureNotificationSnapshot()
         startSensorsAndLocation()
         DrivingStateStore.setDrivingActive(true)
